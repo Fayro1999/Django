@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from .models import CustomUser
@@ -9,11 +10,15 @@ from .token_generator import TokenGenerator
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 import logging
 
 logger = logging.getLogger(__name__)
 
 class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -59,6 +64,8 @@ class RegisterView(APIView):
 
 
 class VerifyEmailView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request, *args, **kwargs):
         token = request.query_params.get('token')
         email = request.query_params.get('email')
@@ -75,3 +82,25 @@ class VerifyEmailView(APIView):
             return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
 
         return Response({"error": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        if not username or not password:
+            return Response({"error": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            if user.is_active:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({"token": token.key}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)

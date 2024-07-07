@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-xjk(30nqy16&vpmac257a9hoe%j3x49k)demqmm869da+pb0@y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['django-7u8g.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'authent',
 ]
 
@@ -53,6 +54,16 @@ EMAIL_HOST_PASSWORD = '048dff60a407be'  # Replace with your Mailtrap password
 #EMAIL_USE_TLS = True
 #DEFAULT_FROM_EMAIL = 'webmaster@localhost'  # Optional: Set a default from email address
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+ 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -97,7 +108,7 @@ DATABASES = {
 }
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgres://user:password@hostname/dbname')
+    'default': dj_database_url.config(default='postgresql://eazzi_user:QGSssfwTB7QT4jRkC7gzUoIBqWSylWoS@dpg-cq2h7m5ds78s73eeevd0-a.oregon-postgres.render.com/eazzi')
 }
 
 # Password validation
