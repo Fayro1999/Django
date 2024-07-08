@@ -104,3 +104,18 @@ class LoginView(APIView):
                 return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        users = CustomUser.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ReferenceView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        return Response({"message": "This is a reference GET request for your API."}, status=status.HTTP_200_OK)
