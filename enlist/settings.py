@@ -48,14 +48,21 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'authent.CustomUser'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-EMAIL_PORT = 2525
-EMAIL_HOST_USER = '8cde8a1c9c6910'  # Replace with your Mailtrap username
-EMAIL_HOST_PASSWORD = '048dff60a407be'  # Replace with your Mailtrap password
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+#EMAIL_PORT = 2525
+#EMAIL_HOST_USER = '8cde8a1c9c6910'  # Replace with your Mailtrap username
+#EMAIL_HOST_PASSWORD = '048dff60a407be'  # Replace with your Mailtrap password
 #EMAIL_USE_TLS = True
 #DEFAULT_FROM_EMAIL = 'webmaster@localhost'  # Optional: Set a default from email address
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'eazzi.eservice@gmail.com'  # Your email address
+EMAIL_HOST_PASSWORD = 'bify enmn ycra mwyv'  # Your email password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -66,6 +73,12 @@ REST_FRAMEWORK = {
     ],
 }
  
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", 'https://django-7u8g.onrender.com')
+CSP_CONNECT_SRC = ("'self'", 'https://django-7u8g.onrender.com')
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
