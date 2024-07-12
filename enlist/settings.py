@@ -96,6 +96,10 @@ EMAIL_HOST_USER = 'eazzi.eservice@gmail.com'  # Your email address
 EMAIL_HOST_PASSWORD = 'bify enmn ycra mwyv'  # Your email password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -123,6 +127,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',  
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
 
 ROOT_URLCONF = 'enlist.urls'
 
