@@ -12,9 +12,6 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-
 import logging
 
 logger = logging.getLogger(__name__)
@@ -46,21 +43,13 @@ class RegisterView(APIView):
                     token = token_generator.make_token(user)
                     verification_url = f"{request.build_absolute_uri(reverse('verify-email'))}?token={token}&email={user.email}"
                     
-                    subject = 'Email Verification'
-                    html_message = render_to_string('verify_email.html', {'username': user.username, 'verification_url': verification_url})
-                    plain_message = strip_tags(html_message)
-                    from_email = settings.DEFAULT_FROM_EMAIL
-                    to = user.email
-
                     send_mail(
-                        subject,
-                        plain_message,
-                        from_email,
-                        [to],
-                        html_message=html_message,
+                        'Email Verification',
+                        f'Click the link to verify your email: {verification_url}',
+                        settings.DEFAULT_FROM_EMAIL,
+                        [user.email],
                         fail_silently=False,
                     )
-
                     
                     return Response({'detail': 'Verification email sent.'}, status=status.HTTP_201_CREATED)
 
@@ -117,32 +106,6 @@ class LoginView(APIView):
             return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SetPasswordView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        token = request.data.get('token')
-        password = request.data.get('password')
-
-        if not token or not password:
-            return Response({"error": "Token and password are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Retrieve user using the token
-        token_generator = TokenGenerator(settings.SECRET_KEY)
-        user = token_generator.get_user_from_token(token)
-
-        if user:
-            if not user.is_active:
-                user.set_password(password)
-                user.is_active = True  # Activate the user after setting the password
-                user.save()
-                return Response({"message": "Password set successfully"}, status=status.HTTP_200_OK)
-            else:
-                return Response({"error": "This account is already active."}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UserListView(APIView):
     permission_classes = [AllowAny]
 
@@ -156,3 +119,11 @@ class ReferenceView(APIView):
 
     def get(self, request, *args, **kwargs):
         return Response({"message": "This is a reference GET request for your API."}, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
