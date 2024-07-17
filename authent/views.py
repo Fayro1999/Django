@@ -65,21 +65,21 @@ class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
         code = request.data.get('code')
 
         if not code:
-             return Response({"error": "code are required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Invalid request. Code is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = get_object_or_404(CustomUser, email=email)
-        token_generator = TokenGenerator()
-        
-        if token_generator.validate_token(email, code):
+        try:
+            user = CustomUser.objects.get(verification_code=code, verification_code_expiration__gt=datetime.now())
             user.is_active = True
+            user.verification_code = None  # Clear the verification code
+            user.verification_code_expiration = None  # Clear the expiration time
             user.save()
             return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
