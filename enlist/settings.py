@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'authent',
     'products',
+    'cart',
 
 
     # Third-party apps
