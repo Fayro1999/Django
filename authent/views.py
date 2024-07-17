@@ -68,8 +68,8 @@ class VerifyEmailView(APIView):
         email = request.data.get('email')
         code = request.data.get('code')
 
-       # if not email or not code:
-           # return Response({"error": "Email and code are required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not code:
+             return Response({"error": "code are required."}, status=status.HTTP_400_BAD_REQUEST)
 
         user = get_object_or_404(CustomUser, email=email)
         token_generator = TokenGenerator()
