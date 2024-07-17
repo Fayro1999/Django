@@ -9,7 +9,6 @@ from .serializers import UserSerializer
 from .token_generator import TokenGenerator
 from django.core.mail import send_mail
 from django.conf import settings
-from django.urls import reverse
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 import logging
@@ -39,13 +38,12 @@ class RegisterView(APIView):
                     user.save()
 
                     # Send verification email
-                    token_generator = TokenGenerator(settings.SECRET_KEY)
-                    token = token_generator.make_token(user)
-                    verification_url = f"{request.build_absolute_uri(reverse('verify-email'))}?token={token}&email={user.email}"
+                    token_generator = TokenGenerator()
+                    code = token_generator.make_token(user)
                     
                     send_mail(
                         'Email Verification',
-                        f'Click the link to verify your email: {verification_url}',
+                        f'Your verification code is {code}. It will expire in 10 minutes.',
                         settings.DEFAULT_FROM_EMAIL,
                         [user.email],
                         fail_silently=False,
@@ -66,22 +64,22 @@ class RegisterView(APIView):
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request, *args, **kwargs):
-        token = request.query_params.get('token')
-        email = request.query_params.get('email')
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        code = request.data.get('code')
 
-        if not token or not email:
-            return Response({"error": "Invalid request. Token and email are required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not email or not code:
+            return Response({"error": "Email and code are required."}, status=status.HTTP_400_BAD_REQUEST)
 
         user = get_object_or_404(CustomUser, email=email)
-        token_generator = TokenGenerator(settings.SECRET_KEY)
+        token_generator = TokenGenerator()
         
-        if token_generator.validate_token(token, user):
+        if token_generator.validate_token(email, code):
             user.is_active = True
             user.save()
             return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
 
-        return Response({"error": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
@@ -119,11 +117,3 @@ class ReferenceView(APIView):
 
     def get(self, request, *args, **kwargs):
         return Response({"message": "This is a reference GET request for your API."}, status=status.HTTP_200_OK)
-
-
-
-
-
-
-
-

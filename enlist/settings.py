@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'corsheaders',
     'authent',
+    'products',
 
 
     # Third-party apps
@@ -103,6 +104,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -214,3 +216,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # JWT settings
 JWT_AUTH_COOKIE = 'my-app-auth'
 JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
+
+#Media management
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

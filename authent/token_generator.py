@@ -1,38 +1,36 @@
-import hashlib
+import random
 from datetime import datetime, timedelta
 
 class TokenGenerator:
-    def __init__(self, secret_key, expiration_hours=24):
-        self.secret_key = secret_key
-        self.expiration_hours = expiration_hours
+    def __init__(self, expiration_minutes=10):
+        self.expiration_minutes = expiration_minutes
+        self.tokens = {}  # This should be replaced with a more secure storage (e.g., a database)
 
     def make_token(self, user):
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        token = hashlib.sha256(f"{user.pk}{user.email}{timestamp}{self.secret_key}".encode()).hexdigest()
-        expiration_time = (datetime.now() + timedelta(hours=self.expiration_hours)).strftime("%Y-%m-%d %H:%M:%S")
-        return f"{token}:{expiration_time}"
+        code = ''.join(random.choices('0123456789', k=6))
+        expiration_time = datetime.now() + timedelta(minutes=self.expiration_minutes)
+        self.tokens[user.email] = (code, expiration_time)
+        return code
 
-    def validate_token(self, token, user):
-        try:
-            token, expiration_time_str = token.split(':')
-            expiration_time = datetime.strptime(expiration_time_str, "%Y-%m-%d %H:%M:%S")
-            if datetime.now() > expiration_time:
-                return False
-
-            # Use the original timestamp for token generation
-            expected_token = hashlib.sha256(f"{user.pk}{user.email}{expiration_time_str}{self.secret_key}".encode()).hexdigest()
-            return expected_token == token
-        except Exception as e:
+    def validate_token(self, email, code):
+        if email not in self.tokens:
             return False
 
-    def get_user_from_token(self, token):
+        stored_code, expiration_time = self.tokens[email]
+        if datetime.now() > expiration_time:
+            return False
+
+        return stored_code == code
+
+    def get_user_from_token(self, email):
+        if email not in self.tokens:
+            return None
+
+        code, expiration_time = self.tokens[email]
+        if datetime.now() > expiration_time:
+            return None
+
         try:
-            token, expiration_time_str = token.split(':')
-            expiration_time = datetime.strptime(expiration_time_str, "%Y-%m-%d %H:%M:%S")
-            if datetime.now() > expiration_time:
-                return None
             return CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
-            return None
-        except Exception as e:
             return None
