@@ -69,7 +69,7 @@ class VerifyEmailView(APIView):
         #email = request.data.get('email') 
 
         if not code:  #or not email:
-            return Response({"error": "Invalid request. Code and Email are required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Invalid request. Code is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user = CustomUser.objects.get(verification_code=code, verification_code_expiration__gt=datetime.now())
