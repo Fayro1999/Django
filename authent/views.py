@@ -10,6 +10,7 @@ from .token_generator import TokenGenerator
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.core.cache import cache
 from rest_framework.authtoken.models import Token
 from datetime import datetime, timedelta
 import logging
