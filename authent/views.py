@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import logging
 
 logger = logging.getLogger(__name__)
-token_generator = TokenGenerator()
+#token_generator = TokenGenerator()
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -70,20 +70,21 @@ class VerifyEmailView(APIView):
         code = request.data.get('code')
         email = request.data.get('email') 
 
-        if not code  or not email:
+        if not code or not email:
             return Response({"error": "Invalid request. Code and email are required."}, status=status.HTTP_400_BAD_REQUEST)
 
+        if not token_generator.validate_token(email, code):
+            return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            user = CustomUser.objects.get(verification_code=code, verification_code_expiration__gt=datetime.now())
+            user = CustomUser.objects.get(email=email)
             user.is_active = True
             user.verification_code = None  # Clear the verification code
             user.verification_code_expiration = None  # Clear the expiration time
             user.save()
             return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
-            return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
-
-
+            return Response({"error": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
