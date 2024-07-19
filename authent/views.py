@@ -51,7 +51,7 @@ class RegisterView(APIView):
                         fail_silently=False,
                     )
 
-                    #cache.set(f'verify_{user.email}', user.email, timeout=600)
+                    cache.set(f'verify_{user.email}', user.email, timeout=600)
                     
                     return Response({'detail': 'Verification email sent.'}, status=status.HTTP_201_CREATED)
 
