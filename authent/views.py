@@ -66,7 +66,7 @@ class RegisterView(APIView):
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         logger.debug('Request data: %s', request.data)
         code = request.data.get('code')
         email = request.data.get('email') 
