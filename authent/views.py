@@ -50,6 +50,8 @@ class RegisterView(APIView):
                         [user.email],
                         fail_silently=False,
                     )
+
+                    cache.set(f'verify_{user.email}', user.email, timeout=600)
                     
                     return Response({'detail': 'Verification email sent.'}, status=status.HTTP_201_CREATED)
 
@@ -69,7 +71,8 @@ class VerifyEmailView(APIView):
     def post(self, request, *args, **kwargs):
         logger.debug('Request data: %s', request.data)
         code = request.data.get('code')
-        email = request.data.get('email') 
+        email = cache.get(f'verify_{user.email}')  # Retrieve the email from cache
+
 
         if not code or not email:
             return Response({"error": "Invalid request. Code is required."}, status=status.HTTP_400_BAD_REQUEST)
