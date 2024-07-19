@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 import logging
 
 logger = logging.getLogger(__name__)
+token_generator = TokenGenerator()
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
