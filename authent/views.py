@@ -71,7 +71,7 @@ class VerifyEmailView(APIView):
     def post(self, request, *args, **kwargs):
         logger.debug('Request data: %s', request.data)
         code = request.data.get('code')
-        email = request.data.get('email')  # Retrieve the email from the request
+       email = cache.get(f'verify_{email}')  # Retrieve the email from the request
 
         logger.debug('Retrieved code: %s, email: %s', code, email)
 
