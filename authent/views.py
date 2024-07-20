@@ -71,7 +71,7 @@ class VerifyEmailView(APIView):
     def post(self, request, *args, **kwargs):
         logger.debug('Request data: %s', request.data)
         code = request.data.get('code')
-        email = cache.get(f'verify_{user.email}')  # Retrieve the email from the request
+        email = request.data.get('email')  # Retrieve the email from the request
 
         logger.debug('Retrieved code: %s, email: %s', code, email)
 
@@ -88,13 +88,16 @@ class VerifyEmailView(APIView):
 
         try:
             user = CustomUser.objects.get(email=email)
-            user.is_active = True
-            user.verification_code = None  # Clear the verification code
-            user.verification_code_expiration = None  # Clear the expiration time
-            user.save()
-            return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
+            logger.error('User not found for email: %s', email)
             return Response({"error": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.is_active = True
+        user.verification_code = None  # Clear the verification code
+        user.verification_code_expiration = None  # Clear the expiration time
+        user.save()
+
+        return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
