@@ -41,7 +41,6 @@ class RegisterView(APIView):
                     user.save()
 
                     # Send verification email
-                    token_generator = TokenGenerator()
                     code = token_generator.make_token(user)
                     
                     send_mail(
@@ -72,19 +71,16 @@ class VerifyEmailView(APIView):
     def post(self, request, *args, **kwargs):
         logger.debug('Request data: %s', request.data)
         code = request.data.get('code')
-        email = cache.get('email')  # Retrieve the email from cache
+        email = request.data.get('email')  # Retrieve the email from the request
 
         logger.debug('Retrieved code: %s, email: %s', code, email)
 
-
-
         if not code or not email:
             logger.error('Code or email missing in request.')
-            return Response({"error": "Invalid request. Code is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Invalid request. Code and email are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-             # Retrieve the stored data from the cache
+        # Retrieve the stored data from the cache
         cached_data = cache.get(f'verify_{email}')
-
 
         if cached_data is None or cached_data['code'] != code:
             logger.error('Invalid or expired code.')
