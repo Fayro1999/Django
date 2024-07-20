@@ -52,7 +52,7 @@ class RegisterView(APIView):
                         fail_silently=False,
                     )
 
-                    cache.set(f'verify_{user.email}', user.email, timeout=600)
+                    cache.set(f'verify_{user.email}', {'email': user.email, 'code': code}, timeout=600)  # Store for 10 minutes
                     
                     return Response({'detail': 'Verification email sent.'}, status=status.HTTP_201_CREATED)
 
@@ -72,13 +72,22 @@ class VerifyEmailView(APIView):
     def post(self, request, *args, **kwargs):
         logger.debug('Request data: %s', request.data)
         code = request.data.get('code')
-        email = cache.get(f'verify_{user.email}')  # Retrieve the email from cache
+        email = cache.get('email')  # Retrieve the email from cache
+
+        logger.debug('Retrieved code: %s, email: %s', code, email)
+
 
 
         if not code or not email:
+            logger.error('Code or email missing in request.')
             return Response({"error": "Invalid request. Code is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not token_generator.validate_token(email, code):
+             # Retrieve the stored data from the cache
+        cached_data = cache.get(f'verify_{email}')
+
+
+        if cached_data is None or cached_data['code'] != code:
+            logger.error('Invalid or expired code.')
             return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
