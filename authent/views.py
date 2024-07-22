@@ -72,7 +72,7 @@ class VerifyEmailView(APIView):
         logger.debug('Request data: %s', request.data)
         code = request.data.get('code')
         email = request.data.get('email')
-        #cached_data = cache.get(f'verify_{email}')
+        cached_data = cache.get(f'verify_{email}')
 
         logger.debug('Retrieved code: %s, email: %s', code, email)
 
@@ -80,8 +80,8 @@ class VerifyEmailView(APIView):
             logger.error('Code or email missing in request.')
             return Response({"error": "Invalid request. Code and email are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        #cached_email = cached_data.get('email')
-        #cached_code = cached_data.get('code')
+        cached_email = cached_data.get('email')
+        cached_code = cached_data.get('code')
 
         if not token_generator.validate_token(email, code):
             return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
