@@ -224,10 +224,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # settings.py
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
+#CACHES = {
+    #'default': {
+       # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+   # }
+#}
 
 
