@@ -21,6 +21,8 @@ from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
 
 
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/authent/', include('authent.urls')),
@@ -28,8 +30,9 @@ urlpatterns = [
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('api/auth/', include('allauth.urls')),
     path('api/products/', include('products.urls')),
-     path('api-token-auth/', obtain_auth_token),
-      path('api/cart/', include('cart.urls')),
+    path('api-token-auth/', obtain_auth_token),
+    path('api/cart/', include('cart.urls')),
+    path('api/', include('delivery.urls')),
 ]
 
 if settings.DEBUG:
