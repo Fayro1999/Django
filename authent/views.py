@@ -13,6 +13,7 @@ from django.contrib.auth import authenticate
 from django.core.cache import cache
 from rest_framework.authtoken.models import Token
 from datetime import datetime, timedelta
+from django.utils.crypto import get_random_string
 import logging
 
 logger = logging.getLogger(__name__)
@@ -66,6 +67,10 @@ class RegisterView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+
+
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
 
@@ -103,6 +108,45 @@ class VerifyEmailView(APIView):
 
         return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
 
+
+
+
+class ResendCodeView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+
+        if not email:
+            return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = CustomUser.objects.get(email=email)
+            if user.is_active:
+                return Response({"error": "This account is already verified."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Send a new verification code
+            code = token_generator.make_token(user)
+            send_mail(
+                'Email Verification',
+                f'Your verification code is {code}. It will expire in 10 minutes.',
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+                fail_silently=False,
+            )
+
+            cache.set(f'verify_{user.email}', {'email': user.email, 'code': code}, timeout=600)  # Store for 10 minutes
+
+            return Response({'detail': 'Verification code resent.'}, status=status.HTTP_200_OK)
+
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -123,6 +167,64 @@ class LoginView(APIView):
                 return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class RequestPasswordResetView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = CustomUser.objects.get(email=email)
+            token = get_random_string(50)  # Generate a random token
+            cache.set(f'reset_{token}', email, timeout=600)  # Store the token with a 10-minute expiration
+            reset_link = f'{settings.FRONTEND_URL}/reset-password/{token}'
+
+            send_mail(
+                'Password Reset Request',
+                f'Use the following link to reset your password: {reset_link}',
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+                fail_silently=False,
+            )
+
+            return Response({"detail": "Password reset link sent."}, status=status.HTTP_200_OK)
+
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, token):
+        password = request.data.get('password')
+        if not password:
+            return Response({"error": "Password is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        email = cache.get(f'reset_{token}')
+        if not email:
+            return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = CustomUser.objects.get(email=email)
+            user.set_password(password)
+            user.save()
+            cache.delete(f'reset_{token}')  # Delete the token after successful reset
+            return Response({"detail": "Password reset successful."}, status=status.HTTP_200_OK)
+        
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 
 class UserListView(APIView):
