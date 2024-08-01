@@ -41,6 +41,7 @@ class RegisterView(APIView):
                     user.save()
 
                     # Send verification email
+                    token_generator = TokenGenerator()
                     code = token_generator.make_token(user)
                     
                     send_mail(
@@ -51,7 +52,8 @@ class RegisterView(APIView):
                         fail_silently=False,
                     )
 
-                    cache.set(f'verify_{user.email}', {'email': user.email, 'code': code}, timeout=600)  # Store for 10 minutes
+                    # Store email and code in cache for 10 minutes
+                    cache.set(f'verify_{code}', {'email': user.email, 'code': code}, timeout=600)
                     
                     return Response({'detail': 'Verification email sent.'}, status=status.HTTP_201_CREATED)
 
@@ -64,26 +66,30 @@ class RegisterView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        logger.debug('Request data: %s', request.data)
-        #code = request.data.get('code')
-        #email = request.data.get('email')
-        cached_data = cache.get(f'verify_{email}')
+        code = request.data.get('code')
 
-        logger.debug('Retrieved code: %s, email: %s', code, email)
+        if not code:
+            logger.error('Code missing in request.')
+            return Response({"error": "Invalid request. Code is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not code or not email:
-            logger.error('Code or email missing in request.')
-            return Response({"error": "Invalid request. Code and email are required."}, status=status.HTTP_400_BAD_REQUEST)
+        # Retrieve the stored data from the cache
+        cached_data = cache.get(f'verify_{code}')
 
-        cached_email = cached_data.get('email')
+        if not cached_data:
+            logger.error('Verification data not found in cache.')
+            return Response({"error": "Invalid or expired verification data"}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = cached_data.get('email')
         cached_code = cached_data.get('code')
 
-        if not token_generator.validate_token(email, code):
+        logger.debug('Retrieved code: %s, email: %s', cached_code, email)
+
+        if cached_code != code:
+            logger.error('Invalid or expired code.')
             return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -93,8 +99,6 @@ class VerifyEmailView(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
 
         user.is_active = True
-        user.verification_code = None  # Clear the verification code
-        user.verification_code_expiration = None  # Clear the expiration time
         user.save()
 
         return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
