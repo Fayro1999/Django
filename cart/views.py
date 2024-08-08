@@ -1,6 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework.permissions import AllowAny #IsAuthenticated
 from .models import Cart, CartItem
 from .serializers import CartSerializer, CartItemSerializer
@@ -58,3 +60,17 @@ class RemoveFromCartView(APIView):
         except CartItem.DoesNotExist:
             return Response({"error": "Product not in cart"}, status=status.HTTP_404_NOT_FOUND)
 
+
+class CartItemViewSet(viewsets.ModelViewSet):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+
+    @action(detail=True, methods=['patch'])
+    def update_quantity(self, request, pk=None):
+        cart_item = self.get_object()
+        quantity = request.data.get('quantity')
+        if quantity is not None and int(quantity) > 0:
+            cart_item.quantity = int(quantity)
+            cart_item.save()
+            return Response(CartItemSerializer(cart_item).data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -33,6 +33,7 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token),
     path('api/cart/', include('cart.urls')),
     path('api/', include('delivery.urls')),
+    #path('api/store/', include('store.urls')),
 ]
 
 if settings.DEBUG:

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'products',
     'cart',
     'delivery',
+    
 
 
     # Third-party apps
@@ -61,6 +62,8 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'authent.CustomUser'
+# For store CustomUser model
+#AUTH_USER_MODEL = 'store.CustomUser'
 
 SITE_ID = 1
 
@@ -102,6 +105,12 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
+
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+#ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -170,7 +179,7 @@ DATABASES = {
 }
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://eazzi_user:QGSssfwTB7QT4jRkC7gzUoIBqWSylWoS@dpg-cq2h7m5ds78s73eeevd0-a.oregon-postgres.render.com/eazzi')
+    'default': dj_database_url.config(default='postgresql://eazzi_mn8r_user:yL5EZJnAtRYbo6U36fVZopkO5KrfxnCf@dpg-cqns5s08fa8c73atlsi0-a.oregon-postgres.render.com/eazzi_mn8r')
 }
 
 # Password validation
