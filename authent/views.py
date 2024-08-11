@@ -14,10 +14,12 @@ from django.core.cache import cache
 from rest_framework.authtoken.models import Token
 from datetime import datetime, timedelta
 from django.utils.crypto import get_random_string
+from django.contrib.auth import get_user_model
 import logging
 
 logger = logging.getLogger(__name__)
 token_generator = TokenGenerator()
+CustomUser = get_user_model()
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
