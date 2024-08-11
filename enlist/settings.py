@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'products',
     'cart',
     'delivery',
-    'stores',
+    #'stores',
     
 
 
@@ -64,7 +64,7 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'authent.CustomUser'
 # For store CustomUser model
-AUTH_USER_MODEL = 'stores.CustomUser'
+#AUTH_USER_MODEL = 'stores.CustomUser'
 
 SITE_ID = 1
 
