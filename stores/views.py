@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from .models import CustomUser
-from .serializers import UserSerializer, SetPasswordSerializer
-from autent.token_generator import TokenGenerator
+from .serializers import UserSerializer #SetPasswordSerializer
+from authent.token_generator import TokenGenerator
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 import logging
