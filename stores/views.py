@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from authent.models import CustomUser
-from .serializers import UserSerializer #SetPasswordSerializer
+from .models import StoreUserProfile
+from .serializers import StoreSerializer #SetPasswordSerializer
 from authent.token_generator import TokenGenerator
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
@@ -21,14 +21,14 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        serializer = UserSerializer(data=request.data)
+        serializer = StoreSerializer(data=request.data)
         if serializer.is_valid():
             username = serializer.validated_data.get('username')
             email = serializer.validated_data.get('email')
 
-            if CustomUser.objects.filter(username=username).exists():
+            if StoreUserProfile.objects.filter(username=username).exists():
                 return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
-            if CustomUser.objects.filter(email=email).exists():
+            if StoreUserProfile.objects.filter(email=email).exists():
                 return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
             user = None
@@ -87,8 +87,8 @@ class VerifyEmailView(APIView):
             return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = CustomUser.objects.get(email=email)
-        except CustomUser.DoesNotExist:
+            user = StoreUserProfile.objects.get(email=email)
+        except StoreUserProfile.DoesNotExist:
             logger.error('User not found for email: %s', email)
             return Response({"error": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -108,7 +108,7 @@ class ResendCodeView(APIView):
             return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = CustomUser.objects.get(email=email)
+            user = StoreUserProfile.objects.get(email=email)
             if user.is_active:
                 return Response({"error": "This account is already verified."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -125,7 +125,7 @@ class ResendCodeView(APIView):
 
             return Response({'detail': 'Verification code resent.'}, status=status.HTTP_200_OK)
 
-        except CustomUser.DoesNotExist:
+        except StoreUserProfile.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -179,7 +179,7 @@ class RequestPasswordResetView(APIView):
             return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            user = CustomUser.objects.get(email=email)
+            user =StoreUserProfile.objects.get(email=email)
             token = get_random_string(50)  # Generate a random token
             cache.set(f'reset_{token}', email, timeout=600)  # Store the token with a 10-minute expiration
             reset_link = f'{settings.FRONTEND_URL}/reset-password/{token}'
@@ -194,7 +194,7 @@ class RequestPasswordResetView(APIView):
 
             return Response({"detail": "Password reset link sent."}, status=status.HTTP_200_OK)
 
-        except CustomUser.DoesNotExist:
+        except StoreUserProfile.DoesNotExist:
             return Response({"error": "User with this email does not exist."}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -213,13 +213,13 @@ class ResetPasswordView(APIView):
             return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            user = CustomUser.objects.get(email=email)
+            user = StoreUserProfile.objects.get(email=email)
             user.set_password(password)
             user.save()
             cache.delete(f'reset_{token}')  # Delete the token after successful reset
             return Response({"detail": "Password reset successful."}, status=status.HTTP_200_OK)
         
-        except CustomUser.DoesNotExist:
+        except StoreUserProfile.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -230,8 +230,8 @@ class UserListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
-        users = CustomUser.objects.all()
-        serializer = UserSerializer(users, many=True)
+        users = StoreUserProfile.objects.all()
+        serializer =UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ReferenceView(APIView):
