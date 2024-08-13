@@ -25,28 +25,24 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        serializer = UserSerializer(data=request.data)
+        serializer = StoreSerializer(data=request.data)
         if serializer.is_valid():
             username = serializer.validated_data.get('username')
             email = serializer.validated_data.get('email')
 
-            if CustomUser.objects.filter(username=username).exists():
+            if StoreUserProfile.objects.filter(username=username).exists():
                 return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
-            if CustomUser.objects.filter(email=email).exists():
+            if StoreUserProfile.objects.filter(email=email).exists():
                 return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-            user = None  # Initialize user to None
-            # Use transaction.atomic to ensure database integrity
+            user = None
             try:
                 with transaction.atomic():
                     user = serializer.save()
-                    user.is_active = False  # Ensure the user is inactive until email verification
+                    user.is_active = False
                     user.save()
 
-                    # Send verification email
-                    token_generator = TokenGenerator()
                     code = token_generator.make_token(user)
-                    
                     send_mail(
                         'Email Verification',
                         f'Your verification code is {code}. It will expire in 10 minutes.',
@@ -55,21 +51,17 @@ class RegisterView(APIView):
                         fail_silently=False,
                     )
 
-                    # Store email and code in cache for 10 minutes
                     cache.set(f'verify_{code}', {'email': user.email, 'code': code}, timeout=600)
-                    
+
                     return Response({'detail': 'Verification email sent.'}, status=status.HTTP_201_CREATED)
 
             except Exception as e:
                 logger.error(f'Failed to register user: {e}')
-                # Rollback user creation if any exception occurs
                 if user:
                     user.delete()
                 return Response({'error': 'Failed to register user. Please try again later.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 
