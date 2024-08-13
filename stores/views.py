@@ -231,7 +231,7 @@ class UserListView(APIView):
 
     def get(self, request, *args, **kwargs):
         users = StoreUserProfile.objects.all()
-        serializer =UserSerializer(users, many=True)
+        serializer =StoreSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ReferenceView(APIView):
