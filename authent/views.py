@@ -25,14 +25,14 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        serializer = StoreSerializer(data=request.data)
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             username = serializer.validated_data.get('username')
             email = serializer.validated_data.get('email')
 
-            if StoreUserProfile.objects.filter(username=username).exists():
+            if CustomUser.objects.filter(username=username).exists():
                 return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
-            if StoreUserProfile.objects.filter(email=email).exists():
+            if CustomUser.objects.filter(email=email).exists():
                 return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
             user = None
