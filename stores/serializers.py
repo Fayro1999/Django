@@ -10,7 +10,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StoreUserProfile
-        fields = ['user', 'phone', 'groups', 'user_permissions']  # Include the user-related fields through the user serializer
+        fields = ['user', 'groups', 'user_permissions']  # Include the user-related fields through the user serializer
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
