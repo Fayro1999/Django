@@ -22,9 +22,15 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        user_serializer = UserSerializer(data=request.data.get('user'))
-        store_serializer = StoreSerializer(data=request.data.get('store'))
+        # Extract the data for user and store
+        user_data = request.data.get('user')
+        store_data = request.data.get('store')
 
+        # Initialize serializers with the provided data
+        user_serializer = UserSerializer(data=user_data)
+        store_serializer = StoreSerializer(data=store_data)
+
+        # Check if both serializers are valid
         if user_serializer.is_valid() and store_serializer.is_valid():
             email = user_serializer.validated_data.get('email')
 
@@ -62,7 +68,13 @@ class RegisterView(APIView):
                     user.delete()
                 return Response({'error': 'Failed to register user. Please try again later.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        errors = {**user_serializer.errors, **store_serializer.errors}
+        # If either serializer is invalid, return their respective errors
+        errors = {}
+        if not user_serializer.is_valid():
+            errors['user'] = user_serializer.errors
+        if not store_serializer.is_valid():
+            errors['store'] = store_serializer.errors
+
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 
