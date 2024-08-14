@@ -21,24 +21,28 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        serializer = StoreSerializer(data=request.data)
-        if serializer.is_valid():
-            username = serializer.validated_data.get('username')
-            email = serializer.validated_data.get('email')
+        user_serializer = UserSerializer(data=request.data.get('user'))
+        store_serializer = StoreSerializer(data=request.data.get('store'))
 
-            if StoreUserProfile.objects.filter(username=username).exists():
-                return Response({"error": "Username already exists."}, status=status.HTTP_400_BAD_REQUEST)
-            if StoreUserProfile.objects.filter(email=email).exists():
+        if user_serializer.is_valid() and store_serializer.is_valid():
+            email = user_serializer.validated_data.get('email')
+
+            if CustomUser.objects.filter(email=email).exists():
                 return Response({"error": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
             user = None
             try:
                 with transaction.atomic():
-                    user = serializer.save()
+                    user = user_serializer.save()
                     user.is_active = False
                     user.save()
 
+                    store_data = store_serializer.validated_data
+                    StoreUserProfile.objects.create(user=user, **store_data)
+
+                    token_generator = TokenGenerator()
                     code = token_generator.make_token(user)
+
                     send_mail(
                         'Email Verification',
                         f'Your verification code is {code}. It will expire in 10 minutes.',
@@ -57,8 +61,8 @@ class RegisterView(APIView):
                     user.delete()
                 return Response({'error': 'Failed to register user. Please try again later.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        errors = {**user_serializer.errors, **store_serializer.errors}
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyEmailView(APIView):
