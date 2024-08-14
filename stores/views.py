@@ -48,7 +48,7 @@ class RegisterView(APIView):
             try:
                 with transaction.atomic():
                     user = user_serializer.save()
-                    user.is_active = False
+                    user.is_active = False  # Mark the user as inactive until email verification
                     user.save()
 
                     # Create the store user profile
@@ -56,7 +56,6 @@ class RegisterView(APIView):
                     StoreUserProfile.objects.create(user=user, **store_data)
 
                     # Generate and send verification email
-                    token_generator = TokenGenerator()
                     code = token_generator.make_token(user)
 
                     send_mail(
@@ -75,7 +74,7 @@ class RegisterView(APIView):
             except Exception as e:
                 logger.error(f'Failed to register user: {e}')
                 if user:
-                    user.delete()
+                    user.delete()  # Rollback user creation if any exception occurs
                 return Response({'error': 'Failed to register user. Please try again later.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # If either serializer is invalid, return their respective errors
@@ -86,7 +85,6 @@ class RegisterView(APIView):
             errors['store'] = store_serializer.errors
 
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
