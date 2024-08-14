@@ -1,10 +1,9 @@
-# stores/models.py
 from django.db import models
 from django.conf import settings
 
+
 class StoreUserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    phone=models.CharField(max_length=15)
     verification_code = models.CharField(max_length=6, null=True, blank=True)
     verification_code_expiration = models.DateTimeField(null=True, blank=True)
     groups = models.ManyToManyField(
@@ -21,6 +20,7 @@ class StoreUserProfile(models.Model):
         help_text='Specific permissions for this user.',
         related_query_name='store_user_profile',
     )
-   
 
+    def __str__(self):
+        return f'{self.user.email} - Store Profile'
 
