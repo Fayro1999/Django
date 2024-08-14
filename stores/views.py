@@ -6,7 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from .models import StoreUserProfile
+from stores.models import StoreUserProfile
+from authent.models import CustomUser
 from stores.serializers import StoreSerializer #SetPasswordSerializer
 from authent.serializers import UserSerializer
 from authent.token_generator import TokenGenerator
@@ -24,7 +25,13 @@ class RegisterView(APIView):
     def post(self, request, *args, **kwargs):
         # Extract the data for user and store
         user_data = request.data.get('user')
-        store_data = request.data.get('store')
+
+        # Prepare store data with the nested user data
+        store_data = {
+            'user': user_data,
+            'groups': request.data.get('groups', []),
+            'user_permissions': request.data.get('user_permissions', [])
+        }
 
         # Initialize serializers with the provided data
         user_serializer = UserSerializer(data=user_data)
@@ -44,9 +51,11 @@ class RegisterView(APIView):
                     user.is_active = False
                     user.save()
 
+                    # Create the store user profile
                     store_data = store_serializer.validated_data
                     StoreUserProfile.objects.create(user=user, **store_data)
 
+                    # Generate and send verification email
                     token_generator = TokenGenerator()
                     code = token_generator.make_token(user)
 
@@ -58,6 +67,7 @@ class RegisterView(APIView):
                         fail_silently=False,
                     )
 
+                    # Store the verification code in cache
                     cache.set(f'verify_{code}', {'email': user.email, 'code': code}, timeout=600)
 
                     return Response({'detail': 'Verification email sent.'}, status=status.HTTP_201_CREATED)
