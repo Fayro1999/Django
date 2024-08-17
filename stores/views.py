@@ -47,13 +47,17 @@ class RegisterView(APIView):
             user = None
             try:
                 with transaction.atomic():
+                    print("Attempting to create user...")
                     user = user_serializer.save()
+                    print(f"User created: {user.email}")
                     user.is_active = False  # Mark the user as inactive until email verification
                     user.save()
 
                     # Create the store user profile
+                    print("Attempting to create store profile...")
                     store_data = store_serializer.validated_data
                     StoreUserProfile.objects.create(user=user, **store_data)
+                    print(f"Store profile created for: {user.email}")
 
                     # Generate and send verification email
                     code = token_generator.make_token(user)
@@ -72,6 +76,7 @@ class RegisterView(APIView):
                     return Response({'detail': 'Verification email sent.'}, status=status.HTTP_201_CREATED)
 
             except Exception as e:
+                print(f"Exception occurred: {e}")
                 logger.error(f'Failed to register user: {e}')
                 if user:
                     user.delete()  # Rollback user creation if any exception occurs
