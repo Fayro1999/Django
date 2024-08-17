@@ -4,8 +4,7 @@ from django.conf import settings
 
 class StoreUserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    verification_code = models.CharField(max_length=6, null=True, blank=True)
-    verification_code_expiration = models.DateTimeField(null=True, blank=True)
+   
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='store_user_profiles',
