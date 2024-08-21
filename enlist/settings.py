@@ -245,3 +245,30 @@ CACHES = {
 #paystack
 PAYSTACK_SECRET_KEY = 'sk_test_b5064d9a32a0c493a7d1c34839b3561767845f7e'
 PAYSTACK_PUBLIC_KEY = 'pk_test_d0f680818313005467c54a28de10b0a4000166f8'
+
+
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'django_errors.log',  # Log file path
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}

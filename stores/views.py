@@ -7,10 +7,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from stores.models import StoreUserProfile
+from .models import StoreDetails
+from .serializers import StoreDetailsSerializer
 from authent.models import CustomUser
 from stores.serializers import StoreSerializer #SetPasswordSerializer
 from authent.serializers import UserSerializer
 from authent.token_generator import TokenGenerator
+from products.models import Product
+from products.serializers import ProductSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 import logging
@@ -23,22 +27,26 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        # Extract the data for user and store
+        print("Endpoint hit")
+        
+        # Extract user data from request
         user_data = request.data.get('user')
-
-        # Prepare store data with the nested user data
+        
+        # Prepare store data without phone since it's part of the CustomUser model
         store_data = {
-            'user': user_data,
             'groups': request.data.get('groups', []),
             'user_permissions': request.data.get('user_permissions', [])
         }
 
         # Initialize serializers with the provided data
         user_serializer = UserSerializer(data=user_data)
-        store_serializer = StoreSerializer(data=store_data)
 
-        # Check if both serializers are valid
-        if user_serializer.is_valid() and store_serializer.is_valid():
+        # Print to check data being passed
+        print("User data:", user_data)
+        print("Store data:", store_data)
+
+        # Check if user serializer is valid
+        if user_serializer.is_valid():
             email = user_serializer.validated_data.get('email')
 
             if CustomUser.objects.filter(email=email).exists():
@@ -47,17 +55,18 @@ class RegisterView(APIView):
             user = None
             try:
                 with transaction.atomic():
-                    print("Attempting to create user...")
                     user = user_serializer.save()
-                    print(f"User created: {user.email}")
                     user.is_active = False  # Mark the user as inactive until email verification
                     user.save()
 
                     # Create the store user profile
-                    print("Attempting to create store profile...")
-                    store_data = store_serializer.validated_data
-                    StoreUserProfile.objects.create(user=user, **store_data)
-                    print(f"Store profile created for: {user.email}")
+                    store_profile = StoreUserProfile.objects.create(
+                        user=user
+                    )
+
+                    # Now set the many-to-many fields using set()
+                    store_profile.groups.set(store_data['groups'])
+                    store_profile.user_permissions.set(store_data['user_permissions'])
 
                     # Generate and send verification email
                     code = token_generator.make_token(user)
@@ -71,25 +80,20 @@ class RegisterView(APIView):
                     )
 
                     # Store the verification code in cache
-                    cache.set(f'verify_{code}', {'email': user.email, 'code': code}, timeout=600)
+                
+                    cache.set(f'stores_verify_{code}', {'email': user.email, 'code': code}, timeout=600)
 
                     return Response({'detail': 'Verification email sent.'}, status=status.HTTP_201_CREATED)
 
             except Exception as e:
-                print(f"Exception occurred: {e}")
                 logger.error(f'Failed to register user: {e}')
                 if user:
                     user.delete()  # Rollback user creation if any exception occurs
                 return Response({'error': 'Failed to register user. Please try again later.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # If either serializer is invalid, return their respective errors
-        errors = {}
-        if not user_serializer.is_valid():
-            errors['user'] = user_serializer.errors
-        if not store_serializer.is_valid():
-            errors['store'] = store_serializer.errors
+        # If user serializer is invalid, return its errors
+        return Response({'user': user_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]
@@ -101,7 +105,7 @@ class VerifyEmailView(APIView):
             logger.error('Code missing in request.')
             return Response({"error": "Invalid request. Code is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        cached_data = cache.get(f'verify_{code}')
+        cached_data = cache.get(f'stores_verify_{code}')
 
         if not cached_data:
             logger.error('Verification data not found in cache.')
@@ -269,4 +273,60 @@ class ReferenceView(APIView):
 
     def get(self, request, *args, **kwargs):
         return Response({"message": "This is a reference GET request for your API."}, status=status.HTTP_200_OK)
+
+
+
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import StoreUserProfile, StoreDetails
+from .serializers import StoreDetailsSerializer
+from products.models import Product
+from products.serializers import ProductSerializer
+
+class StoreDetailsView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Get store by primary key (pk) provided in URL
+        store_id = kwargs.get('pk')
+        try:
+            store = StoreDetails.objects.get(pk=store_id)
+        except StoreDetails.DoesNotExist:
+            return Response({'error': 'Store not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Serialize store details
+        store_data = StoreDetailsSerializer(store).data
+        
+        # Fetch products associated with this store
+        products = Product.objects.filter(vendor=store)
+        products_data = ProductSerializer(products, many=True).data
+        
+        # Combine store details and products
+        store_data['products'] = products_data
+        
+        return Response(store_data)
+    
+    def post(self, request, *args, **kwargs):
+        # Ensure the user is authenticated
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            # Retrieve the StoreUserProfile for the authenticated user
+            store_user_profile = StoreUserProfile.objects.get(user=request.user)
+        except StoreUserProfile.DoesNotExist:
+            return Response({'error': 'Store user profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Include store_user_profile ID in the incoming data
+        data = request.data.copy()
+        data['store_user_profile'] = store_user_profile.id
+
+        # Serialize and validate the incoming data
+        serializer = StoreDetailsSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'detail': 'Store details added successfully.'}, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 

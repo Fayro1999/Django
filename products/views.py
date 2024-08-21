@@ -14,3 +14,10 @@ class ProductListView(generics.ListAPIView):
     permission_classes = [AllowAny]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+    
+    def get_queryset(self):
+        vendor_id = self.request.query_params.get('vendor_id')
+        if vendor_id:
+            return Product.objects.filter(vendor_id=vendor_id)
+        return Product.objects.all()
