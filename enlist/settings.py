@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'cart',
     'delivery',
     'stores',
+    'analytics',
+    'orders',
     
 
 
@@ -135,6 +137,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
      "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
+    'analytics.middleware.VisitorTrackingMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -272,3 +275,7 @@ LOGGING = {
         },
     },
 }
+
+
+
+

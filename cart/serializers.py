@@ -1,17 +1,26 @@
+# cart/serializers.py
 from rest_framework import serializers
-from .models import Cart, CartItem
-from products.serializers import ProductSerializer  # Import the ProductSerializer
+from products.serializers import ProductSerializer
+from .models import CartItem, Cart
 
 class CartItemSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()  # Use ProductSerializer for the product field
-
+    amount = serializers.ReadOnlyField()  # Computed field for total amount (price * quantity)
+    product = ProductSerializer()  # Include product details
+    
     class Meta:
         model = CartItem
-        fields = '__all__'
+        fields = ['id', 'product', 'quantity', 'amount']
+
+
 
 class CartSerializer(serializers.ModelSerializer):
-    items = CartItemSerializer(many=True, read_only=True)
+    items = CartItemSerializer(many=True, source='cartitem_set')  # Use the reverse relation to include cart items
+    total_amount = serializers.SerializerMethodField()
+    user = serializers.ReadOnlyField(source='user.username')  # Include the username of the user
 
     class Meta:
         model = Cart
-        fields = '__all__'
+        fields = ['id', 'user', 'items', 'total_amount']
+
+    def get_total_amount(self, obj):
+        return sum(item.amount for item in obj.cartitem_set.all())
