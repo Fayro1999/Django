@@ -7,3 +7,8 @@ EMAIL_PORT=2525
 EMAIL_HOST_USER=8cde8a1c9c6910
 EMAIL_HOST_PASSWORD=048dff60a407be
 CORS_ALLOW_ALL_ORIGINS=True
+
+
+# Ignore Firebase admin key
+/credentials/firebase-admin-key.json
+

@@ -33,6 +33,10 @@ urlpatterns = [
     path('api/stores/', include('stores.urls')),
      path('api/orders/', include('orders.urls')),
     path('api/analytics/', include('analytics.urls')),  # Make sure there is a trailing slash
+    path('api/notify/', include('notifications.urls')),
+    path('api/dispatch-riders/', include('riders.urls')),
+    path('api/', include('store_locations.urls')),
+    path('', include('search.urls')),
 ]
 
 if settings.DEBUG:

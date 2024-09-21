@@ -31,7 +31,17 @@ class StoreDetails(models.Model):
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     cac_image = models.ImageField(upload_to='cac_images/')
+
+
+    # New Fields
+    working_hours = models.CharField(max_length=100, blank=True, null=True)
+    about_store = models.TextField(blank=True, null=True)
+    profile_image = models.ImageField(upload_to='store_profiles/', blank=True, null=True)
+    background_image = models.ImageField(upload_to='store_backgrounds/', blank=True, null=True)
+
 
     def __str__(self):
         return self.store_name

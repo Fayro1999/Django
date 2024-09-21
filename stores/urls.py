@@ -8,7 +8,9 @@ from .views import (
     ResetPasswordView,
     UserListView,
     ReferenceView,
-    StoreDetailsView
+    StoreDetailsView,
+    UpdateStoreProfileView
+
 )
 
 urlpatterns = [
@@ -21,4 +23,5 @@ urlpatterns = [
     path('users/', UserListView.as_view(), name='user_list'),
     path('reference/', ReferenceView.as_view(), name='reference'),
    path('store/<int:pk>/', StoreDetailsView.as_view(), name='store-details'),
+    path('stores/<int:store_id>/update/', UpdateStoreProfileView.as_view(), name='update-store-profile'),
 ]

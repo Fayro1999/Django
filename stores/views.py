@@ -330,3 +330,17 @@ class StoreDetailsView(APIView):
 
 
 
+class UpdateStoreProfileView(APIView):
+    def put(self, request, store_id, *args, **kwargs):
+        try:
+            store = StoreDetails.objects.get(store_user_profile__id=store_id)
+        except StoreDetails.DoesNotExist:
+            return Response({'error': 'Store not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StoreDetailsSerializer(store, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

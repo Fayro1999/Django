@@ -5,6 +5,9 @@ from django.utils import timezone
 from rest_framework.permissions import AllowAny 
 from django.db.models import Sum
 from .models import StoreVisitor, StoreOrder, StoreRevenue, StoreCart, VisitorPurchase
+from .models import WebsiteVisitor, WebsiteOrder, WebsiteRevenue, WebsiteCart, WebsitePurchase
+from .serializers import WebsiteVisitorSerializer, WebsiteOrderSerializer, WebsiteRevenueSerializer, WebsiteCartSerializer, WebsitePurchaseSerializer
+
 
 class StoreStatisticsView(APIView):
     permission_classes = [AllowAny]
@@ -81,3 +84,28 @@ class StoreStatisticsView(APIView):
         visitor_purchase.save()
 
         return Response({"message": "Statistics updated successfully"}, status=status.HTTP_200_OK)
+
+
+
+
+# website analytics
+
+class WebsiteAnalyticsView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Aggregate data here
+        total_visitors = WebsiteVisitor.objects.all().aggregate(total=Sum('visitor_count'))['total']
+        total_orders = WebsiteOrder.objects.all().aggregate(total=Sum('total_orders'))['total']
+        total_revenue = WebsiteRevenue.objects.all().aggregate(total=Sum('revenue'))['total']
+        total_cart = WebsiteCart.objects.all().aggregate(total=Sum('cart_count'))['total']
+        total_abandoned_cart = WebsiteCart.objects.all().aggregate(total=Sum('abandoned_cart_count'))['total']
+        total_purchases = WebsitePurchase.objects.all().aggregate(total=Sum('visitor_count'))['total']
+
+        data = {
+            'total_visitors': total_visitors,
+            'total_orders': total_orders,
+            'total_revenue': total_revenue,
+            'total_cart': total_cart,
+            'total_abandoned_cart': total_abandoned_cart,
+            'total_purchases': total_purchases
+        }
+        return Response(data, status=status.HTTP_200_OK)

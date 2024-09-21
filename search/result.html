@@ -1,0 +1,15 @@
+<h1>Search Results for "{{ query }}"</h1>
+
+<h2>Products:</h2>
+<ul>
+    {% for product in product_results %}
+        <li>{{ product.name }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Stores:</h2>
+<ul>
+    {% for store in store_results %}
+        <li>{{ store.store_name }}</li>
+    {% endfor %}
+</ul>

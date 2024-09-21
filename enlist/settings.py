@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import dj_database_url
 import os
+import firebase_admin
+from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -50,6 +52,11 @@ INSTALLED_APPS = [
     'stores',
     'analytics',
     'orders',
+    'channels',
+    'notifications',
+    'riders',
+    'fcm_django',
+    'store_locations',
     
 
 
@@ -183,7 +190,7 @@ DATABASES = {
 }
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://eazzi_o7p8_user:AdGaK7c5rtwY2rf2GQKBwAHOEhyTdsQK@dpg-cqsi4qogph6c73ab65i0-a.oregon-postgres.render.com/eazzi_o7p8')
+    'default': dj_database_url.config(default='postgresql://eazzi_gdxp_user:AuLqBNQXcqBa4RBmA3eOqJrK9hgozrhS@dpg-crgk41rqf0us73dn1b60-a.oregon-postgres.render.com/eazzi_gdxp')
 }
 
 # Password validation
@@ -276,6 +283,25 @@ LOGGING = {
     },
 }
 
+
+# Set up the Channels layer
+ASGI_APPLICATION = 'your_project_name.asgi.application'
+
+# Redis backend for channel layer (if you want to use Redis)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],  # Your Redis setup
+        },
+    },
+}
+
+
+
+# Path to the firebase-admin-key.json file
+cred = credentials.Certificate("credentials/firebase-admin-key.json")
+firebase_admin.initialize_app(cred)
 
 
 
