@@ -304,4 +304,8 @@ CHANNEL_LAYERS = {
 cred = credentials.Certificate(os.path.join(BASE_DIR, 'credentials/firebase-admin-key.json'))
 firebase_admin.initialize_app(cred)
 
+# Read the Firebase key from the environment variable
+firebase_key_json = os.getenv('FIREBASE_ADMIN_KEY')
 
+# Load the credentials from the JSON string
+cred = credentials.Certificate(json.loads(firebase_key_json))
