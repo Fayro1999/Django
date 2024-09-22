@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'riders',
     'fcm_django',
     'store_locations',
+    'search',
     
 
 
