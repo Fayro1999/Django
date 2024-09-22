@@ -286,7 +286,7 @@ LOGGING = {
 
 
 # Set up the Channels layer
-ASGI_APPLICATION = 'your_project_name.asgi.application'
+ASGI_APPLICATION = 'enlist.asgi.application'
 
 # Redis backend for channel layer (if you want to use Redis)
 CHANNEL_LAYERS = {
@@ -301,8 +301,7 @@ CHANNEL_LAYERS = {
 
 
 # Path to the firebase-admin-key.json file
-cred = credentials.Certificate("credentials/firebase-admin-key.json")
+cred = credentials.Certificate(os.path.join(BASE_DIR, 'credentials/firebase-admin-key.json'))
 firebase_admin.initialize_app(cred)
-
 
 
