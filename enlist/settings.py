@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import dj_database_url
+import json
 import os
 import firebase_admin
 from firebase_admin import credentials, initialize_app
@@ -300,12 +301,41 @@ CHANNEL_LAYERS = {
 
 
 
-# Path to the firebase-admin-key.json file
-cred = credentials.Certificate(os.path.join(BASE_DIR, 'credentials/firebase-admin-key.json'))
-firebase_admin.initialize_app(cred)
-
-# Read the Firebase key from the environment variable
+# Check if the environment variable is present
 firebase_key_json = os.getenv('FIREBASE_ADMIN_KEY')
 
+if firebase_key_json:
+    # Load the credentials from the environment variable
+    try:
+        firebase_credentials = json.loads(firebase_key_json)
+        cred = credentials.Certificate(firebase_credentials)
+        firebase_admin.initialize_app(cred)
+        print("Firebase initialized using environment variable.")
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Error decoding the Firebase key from the environment: {e}")
+else:
+    # If no environment variable, fall back to using the local file
+    cred_path = os.path.join(BASE_DIR, 'credentials/firebase-admin-key.json')
+    if os.path.exists(cred_path):
+        cred = credentials.Certificate(cred_path)
+        firebase_admin.initialize_app(cred)
+        print("Firebase initialized using local key file.")
+    else:
+        raise FileNotFoundError("Firebase credentials not found.")
+
+
+
+
+
+
+# Path to the firebase-admin-key.json file
+#cred = credentials.Certificate(os.path.join(BASE_DIR, 'credentials/firebase-admin-key.json'))
+#firebase_admin.initialize_app(cred)
+
+# Read the Firebase key from the environment variable
+#firebase_key_json = os.getenv('FIREBASE_ADMIN_KEY')
+
 # Load the credentials from the JSON string
-cred = credentials.Certificate(json.loads(firebase_key_json))
+#cred = credentials.Certificate(json.loads(firebase_key_json))
+
+
