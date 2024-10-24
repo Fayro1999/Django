@@ -42,6 +42,7 @@ class ListDispatchRidersView(APIView):
 
 
 class RiderResponseView(APIView):
+     permission_classes = [AllowAny] 
     def post(self, request, *args, **kwargs):
         rider = request.user
         order_id = request.data.get('order_id')
