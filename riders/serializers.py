@@ -35,7 +35,7 @@ class LoginSerializer(serializers.Serializer):
         if not email or not password:
             raise serializers.ValidationError('Both email and password are required')
 
-        user = authenticate(email=email, password=password)
+        user = authenticate(request=self.context.get('request'), email=email, password=password)
         if user is None:
             raise serializers.ValidationError('Invalid email or password')
 
