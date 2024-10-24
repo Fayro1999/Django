@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import DispatchRider
 from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 
 
 class DispatchRiderSerializer(serializers.ModelSerializer):
