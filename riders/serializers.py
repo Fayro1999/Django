@@ -4,9 +4,14 @@ from django.contrib.auth import authenticate
 
 
 class DispatchRiderSerializer(serializers.ModelSerializer):
+    rider_id = serializers.CharField(read_only=True)  # Add rider_id as read-only
+
     class Meta:
         model = DispatchRider
-        fields = ['email', 'phone', 'company', 'location', 'password']
+        fields = ['email', 'phone', 'company', 'location', 'password', 'rider_id']  # Include rider_id
+        extra_kwargs = {
+            'password': {'write_only': True},  # Ensure password is write-only
+        }
 
     def create(self, validated_data):
         user = DispatchRider.objects.create_user(
@@ -19,7 +24,6 @@ class DispatchRiderSerializer(serializers.ModelSerializer):
         return user
 
 
-        
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
@@ -36,4 +40,3 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError('Invalid email or password')
 
         return {'user': user}
-
