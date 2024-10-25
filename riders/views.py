@@ -32,8 +32,8 @@ class LoginDispatchRiderView(APIView):
         email = request.data.get('email')
         password = request.data.get('password')
         
-        if not username or not password:
-            return Response({"error": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not email or not password:
+            return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
         
         user = authenticate(request, username=email, password=password)
         
