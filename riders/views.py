@@ -24,7 +24,7 @@ class RegisterDispatchRiderView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginView(APIView):
+class LoginDispatchRiderView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
