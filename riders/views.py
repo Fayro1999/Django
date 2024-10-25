@@ -34,6 +34,7 @@ class RegisterDispatchRiderView(APIView):
             'password': request.data.get('password'),  # Ensure password is included
             'first_name': request.data.get('first_name'),  # Include any other fields you need
             'last_name': request.data.get('last_name'),
+            'username': request.data.get('email'),  # Setting username to email
         }
 
         # Extract dispatch rider data from the request
@@ -49,7 +50,8 @@ class RegisterDispatchRiderView(APIView):
                 email=user_data['email'],
                 password=user_data['password'],
                 first_name=user_data['first_name'],
-                last_name=user_data['last_name']
+                last_name=user_data['last_name'],
+                username=user_data['username'] 
             )
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

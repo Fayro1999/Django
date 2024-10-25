@@ -13,6 +13,16 @@ class DispatchRider(models.Model):
     is_admin = models.BooleanField(default=False)
 
 
+
+
+
+
+    USERNAME_FIELD = 'email'  # Use email as the username field
+    REQUIRED_FIELDS = [] 
+
+
+
+
     
 
     def __str__(self):
