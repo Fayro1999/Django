@@ -1,27 +1,24 @@
 from rest_framework import serializers
 from .models import DispatchRider
 
-
 class DispatchRiderSerializer(serializers.ModelSerializer):
-    rider_id = serializers.CharField(read_only=True)  # Add rider_id as read-only
-
+    rider_id = serializers.CharField(read_only=True)
+    
     class Meta:
         model = DispatchRider
-        fields = ['email', 'phone', 'company', 'location', 'password', 'rider_id']  # Include rider_id
+        fields = ['user', 'phone', 'company', 'location', 'rider_id']
         extra_kwargs = {
-            'password': {'write_only': True},  # Ensure password is write-only
+            'user': {'required': True}  # Ensure user info is provided
         }
 
     def create(self, validated_data):
-        user = DispatchRider.objects.create_user(
-            email=validated_data['email'],
-            #username=validated_data['email'],
+        user_data = validated_data.pop('user')
+        user = get_user_model().objects.create_user(**user_data)  # Ensure user is created correctly
+        
+        dispatch_rider = DispatchRider.objects.create(
+            user=user,
             phone=validated_data['phone'],
             company=validated_data['company'],
             location=validated_data['location'],
-            password=validated_data['password']
         )
-        return user
-
-
-
+        return dispatch_rider

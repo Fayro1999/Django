@@ -1,38 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 import random
 import string
 
-class DispatchRiderManager(BaseUserManager):
-    def create_user(self, email, phone, company, location, password=None):
-        if not email:
-            raise ValueError('The Email field must be set')
-        user = self.model(
-            email=self.normalize_email(email),
-            phone=phone,
-            company=company,
-            location=location,
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, phone, company, location, password=None):
-        user = self.create_user(
-            email,
-            phone=phone,
-            company=company,
-            location=location,
-            password=password,
-        )
-        user.is_admin = True
-        user.save(using=self._db)
-        return user
-
-
-class DispatchRider(AbstractBaseUser):
-    email = models.EmailField(unique=True)
+class DispatchRider(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)  # Link to CustomUser
     phone = models.CharField(max_length=20)
     company = models.CharField(max_length=100)
     location = models.CharField(max_length=255)
@@ -40,19 +12,11 @@ class DispatchRider(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
-    objects = DispatchRiderManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone', 'company', 'location']
+    
 
     def __str__(self):
-        return self.email
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
+        return self.user.email  # Return email for better readability
 
     # Custom save method to generate rider_id
     def save(self, *args, **kwargs):

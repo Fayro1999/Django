@@ -18,24 +18,44 @@ class RegisterDispatchRiderView(APIView):
     permission_classes = [AllowAny]  # Allow anyone to register
 
     def post(self, request, *args, **kwargs):
-        serializer = DispatchRiderSerializer(data=request.data)
+        # Ensure the request contains user data
+        user_data = {
+            'email': request.data.get('email'),
+            'password': request.data.get('password'),  # Ensure password is included
+            'first_name': request.data.get('first_name'),  # Add any other fields you need
+            'last_name': request.data.get('last_name'),
+        }
+
+        # Prepare dispatch rider data
+        rider_data = {
+            'phone': request.data.get('phone'),
+            'company': request.data.get('company'),
+            'location': request.data.get('location'),
+        }
+
+        # Combine user and rider data for serialization
+        combined_data = {**user_data, **rider_data}
+
+        serializer = DispatchRiderSerializer(data=combined_data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save()  # This will create the user and the dispatch rider
             return Response({"message": "Dispatch rider registered successfully"}, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class LoginDispatchRiderView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
+        username = request.data.get('email')
         password = request.data.get('password')
         
-        if not email or not password:
+        if not username or not password:
             return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
         
-        user = authenticate(request, username=email, password=password)
+        user = authenticate(request, username=username, password=password)
         
         if user is not None:
             if user.is_active:
@@ -45,7 +65,6 @@ class LoginDispatchRiderView(APIView):
                 return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class ListDispatchRidersView(APIView):
