@@ -34,7 +34,7 @@ class LoginDispatchRiderView(APIView):
         if not username or not password:
             return Response({"error": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
         
-        user = authenticate(request, username=email, password=password)
+        user = authenticate(request, username=username, password=password)
         
         if user is not None:
             if user.is_active:
