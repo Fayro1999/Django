@@ -8,6 +8,7 @@ from .models import DispatchRider
 from orders.models import Order
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 
 
 
@@ -28,7 +29,7 @@ class LoginDispatchRiderView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
+        username = request.data.get('email')
         password = request.data.get('password')
         
         if not username or not password:
