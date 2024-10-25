@@ -6,6 +6,9 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from django.contrib.auth import login
 from .models import DispatchRider
 from orders.models import Order
+from django.contrib.auth import get_user_model
+
+
 
 
 class RegisterDispatchRiderView(APIView):
