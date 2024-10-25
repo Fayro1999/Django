@@ -15,7 +15,7 @@ class DispatchRiderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = DispatchRider.objects.create_user(
             email=validated_data['email'],
-            username=validated_data['email'],
+            #username=validated_data['email'],
             phone=validated_data['phone'],
             company=validated_data['company'],
             location=validated_data['location'],
