@@ -28,7 +28,7 @@ class LoginDispatchRiderView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('email')
+        username = request.data.get('username')
         password = request.data.get('password')
         
         if not username or not password:
