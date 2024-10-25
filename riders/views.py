@@ -7,6 +7,8 @@ from django.contrib.auth import login
 from .models import DispatchRider
 from orders.models import Order
 from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate
+
 
 
 
