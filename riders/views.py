@@ -13,62 +13,42 @@ from rest_framework.authtoken.models import Token
 
 
 
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework import status
-from django.contrib.auth import get_user_model
-from .models import DispatchRider
-from .serializers import DispatchRiderSerializer
-
 User = get_user_model()
 
 class RegisterDispatchRiderView(APIView):
     permission_classes = [AllowAny]  # Allow anyone to register
 
     def post(self, request, *args, **kwargs):
-        # Extract user data from the request
+        # Collect only the required user fields
         user_data = {
             'email': request.data.get('email'),
-            'password': request.data.get('password'),  # Ensure password is included
-            'first_name': request.data.get('first_name'),  # Include any other fields you need
-            'last_name': request.data.get('last_name'),
-            'username': request.data.get('email'),  # Setting username to email
+            'password': request.data.get('password')
         }
 
-        # Extract dispatch rider data from the request
+        # Ensure required user fields are provided
+        if not user_data['email'] or not user_data['password']:
+            return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Collect dispatch rider data
         rider_data = {
             'phone': request.data.get('phone'),
             'company': request.data.get('company'),
-            'location': request.data.get('location'),
+            'location': request.data.get('location')
         }
 
-        # Create a new user
         try:
-            user = User.objects.create_user(
-                email=user_data['email'],
-                password=user_data['password'],
-                first_name=user_data['first_name'],
-                last_name=user_data['last_name'],
-                username=user_data['username'] 
-            )
+            # Create CustomUser instance
+            user = User.objects.create_user(**user_data)
+
+            # Create DispatchRider associated with the user
+            DispatchRider.objects.create(user=user, **rider_data)
+
+            return Response({"message": "Dispatch rider registered successfully"}, status=status.HTTP_201_CREATED)
+        
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create the DispatchRider instance
-        dispatch_rider_data = {
-            'user': user,  # Associate the created user
-            **rider_data  # Add rider data
-        }
 
-        # Use a serializer to save the DispatchRider
-        serializer = DispatchRiderSerializer(data=dispatch_rider_data)
-        if serializer.is_valid():
-            serializer.save()  # Save the dispatch rider
-            return Response({"message": "Dispatch rider registered successfully"}, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginDispatchRiderView(APIView):
     permission_classes = [AllowAny]
@@ -90,6 +70,7 @@ class LoginDispatchRiderView(APIView):
                 return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class ListDispatchRidersView(APIView):
