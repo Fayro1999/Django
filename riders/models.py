@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.conf import settings
 import random
 import string
 
@@ -8,6 +7,7 @@ class DispatchRiderManager(BaseUserManager):
     def create_user(self, email, phone, company, location, password=None):
         if not email:
             raise ValueError('The Email field must be set')
+        
         user = self.model(
             email=self.normalize_email(email),
             phone=phone,
@@ -20,20 +20,21 @@ class DispatchRiderManager(BaseUserManager):
 
     def create_superuser(self, email, phone, company, location, password=None):
         user = self.create_user(
-            email,
+            email=email,
             phone=phone,
             company=company,
             location=location,
             password=password,
         )
         user.is_admin = True
+        user.is_active = True
         user.save(using=self._db)
         return user
 
 
 class DispatchRider(AbstractBaseUser):
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=20, null=True, blank=True)
+    phone = models.CharField(max_length=20, null= True, blank=True)
     company = models.CharField(max_length=100)
     location = models.CharField(max_length=255)
     rider_id = models.CharField(max_length=12, unique=True, blank=True)  # Rider ID field
@@ -43,7 +44,7 @@ class DispatchRider(AbstractBaseUser):
     objects = DispatchRiderManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone', 'company', 'location']
+    REQUIRED_FIELDS = ['phone', 'company', 'location']  # Fields required for superuser creation
 
     def __str__(self):
         return self.email
@@ -54,6 +55,10 @@ class DispatchRider(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
+    @property
+    def is_staff(self):
+        return self.is_admin
+
     # Custom save method to generate rider_id
     def save(self, *args, **kwargs):
         if not self.rider_id:
@@ -62,8 +67,3 @@ class DispatchRider(AbstractBaseUser):
             location_prefix = self.location[:3].upper()
             self.rider_id = f"EL{random_digits}{location_prefix}"
         super().save(*args, **kwargs)
-
-
-
-
-

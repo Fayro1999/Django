@@ -80,6 +80,7 @@ AUTH_USER_MODEL = 'authent.CustomUser'
 SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
+    'riders.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
@@ -192,7 +193,7 @@ DATABASES = {
 }
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://eazzi_qrzx_user:yrlsgvVg92tE7SdoEUdBeGcbeQw7Ucbd@dpg-csa0efo8fa8c73ciohf0-a.oregon-postgres.render.com/eazzi_qrzx')
+    'default': dj_database_url.config(default='postgresql://eazzi_rk40_user:xjrHsgNqFbJGb0AhAvtR2VN9i9GKyXeE@dpg-cse2p95ds78s739h9160-a.oregon-postgres.render.com/eazzi_rk40')
 }
 
 # Password validation

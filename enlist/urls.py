@@ -31,7 +31,7 @@ urlpatterns = [
     path('api/cart/', include('cart.urls')),
     path('api/', include('delivery.urls')),
     path('api/stores/', include('stores.urls')),
-     path('api/orders/', include('orders.urls')),
+    path('api/orders/', include('orders.urls')),
     path('api/analytics/', include('analytics.urls')),  # Make sure there is a trailing slash
     path('api/notify/', include('notifications.urls')),
     path('api/dispatch-riders/', include('riders.urls')),
