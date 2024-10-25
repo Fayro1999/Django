@@ -19,57 +19,22 @@ class RegisterDispatchRiderView(APIView):
     permission_classes = [AllowAny]  # Allow anyone to register
 
     def post(self, request, *args, **kwargs):
-        # Collect only the required user fields
-        user_data = {
-            'email': request.data.get('email'),
-            'password': request.data.get('password')
-        }
-
-        # Ensure required user fields are provided
-        if not user_data['email'] or not user_data['password']:
-            return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Collect dispatch rider data
-        rider_data = {
-            'phone': request.data.get('phone'),
-            'company': request.data.get('company'),
-            'location': request.data.get('location')
-        }
-
-        try:
-            # Create CustomUser instance
-            user = User.objects.create_user(**user_data)
-
-            # Create DispatchRider associated with the user
-            DispatchRider.objects.create(user=user, **rider_data)
-
+        serializer = DispatchRiderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
             return Response({"message": "Dispatch rider registered successfully"}, status=status.HTTP_201_CREATED)
-        
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginDispatchRiderView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  # Allow anyone to log in
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('email')
-        password = request.data.get('password')
-        
-        if not username or not password:
-            return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
-            if user.is_active:
-                token, created = Token.objects.get_or_create(user=user)
-                return Response({"token": token.key}, status=status.HTTP_200_OK)
-            else:
-                return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            login(request, user)
+            return Response({"message": "Logged in successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
