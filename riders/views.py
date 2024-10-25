@@ -14,36 +14,59 @@ from rest_framework.authtoken.models import Token
 
 
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework import status
+from django.contrib.auth import get_user_model
+from .models import DispatchRider
+from .serializers import DispatchRiderSerializer
+
+User = get_user_model()
+
 class RegisterDispatchRiderView(APIView):
     permission_classes = [AllowAny]  # Allow anyone to register
 
     def post(self, request, *args, **kwargs):
-        # Ensure the request contains user data
+        # Extract user data from the request
         user_data = {
             'email': request.data.get('email'),
             'password': request.data.get('password'),  # Ensure password is included
-            'first_name': request.data.get('first_name'),  # Add any other fields you need
+            'first_name': request.data.get('first_name'),  # Include any other fields you need
             'last_name': request.data.get('last_name'),
         }
 
-        # Prepare dispatch rider data
+        # Extract dispatch rider data from the request
         rider_data = {
             'phone': request.data.get('phone'),
             'company': request.data.get('company'),
             'location': request.data.get('location'),
         }
 
-        # Combine user and rider data for serialization
-        combined_data = {**user_data, **rider_data}
+        # Create a new user
+        try:
+            user = User.objects.create_user(
+                email=user_data['email'],
+                password=user_data['password'],
+                first_name=user_data['first_name'],
+                last_name=user_data['last_name']
+            )
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = DispatchRiderSerializer(data=combined_data)
+        # Create the DispatchRider instance
+        dispatch_rider_data = {
+            'user': user,  # Associate the created user
+            **rider_data  # Add rider data
+        }
+
+        # Use a serializer to save the DispatchRider
+        serializer = DispatchRiderSerializer(data=dispatch_rider_data)
         if serializer.is_valid():
-            serializer.save()  # This will create the user and the dispatch rider
+            serializer.save()  # Save the dispatch rider
             return Response({"message": "Dispatch rider registered successfully"}, status=status.HTTP_201_CREATED)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 class LoginDispatchRiderView(APIView):
     permission_classes = [AllowAny]
