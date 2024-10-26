@@ -33,8 +33,8 @@ class DispatchRiderManager(BaseUserManager):
 
 
 class DispatchRider(AbstractBaseUser):
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=20, null= True, blank=True)
+    email = models.EmailField(unique=True, default="placeholder@example.com")
+    phone = models.CharField(max_length=20, null=True, blank=True, default="0000000000")
     company = models.CharField(max_length=100)
     location = models.CharField(max_length=255)
     rider_id = models.CharField(max_length=12, unique=True, blank=True)  # Rider ID field
