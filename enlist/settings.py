@@ -73,9 +73,9 @@ INSTALLED_APPS = [
 
 ]
 
-#AUTH_USER_MODEL = 'authent.CustomUser'
+AUTH_USER_MODEL = 'authent.CustomUser'
 # For store CustomUser model
-AUTH_USER_MODEL = 'riders.DispatchRider'
+#AUTH_USER_MODEL = 'riders.DispatchRider'
 
 SITE_ID = 1
 
