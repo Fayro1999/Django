@@ -26,16 +26,25 @@ class RegisterDispatchRiderView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginDispatchRiderView(APIView):
-    permission_classes = [AllowAny]  # Allow anyone to log in
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-            login(request, user)
-            return Response({"message": "Logged in successfully"}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        if not username or not password:
+            return Response({"error": "email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = authenticate(request, email=email, password=password)
+        
+        if user is not None:
+            if user.is_active:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({"token": token.key}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ListDispatchRidersView(APIView):
