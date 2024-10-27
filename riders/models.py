@@ -15,6 +15,10 @@ class DispatchRider(models.Model):
     location = models.CharField(max_length=255)
     rider_id = models.CharField(max_length=12, unique=True, blank=True)  # Rider ID field
 
+
+    USERNAME_FIELD = 'email'  # Set email as the username field
+    REQUIRED_FIELDS = []  # Add other required fields if any
+
     def __str__(self):
         return f"Dispatch Rider: {self.user.email}"
 
