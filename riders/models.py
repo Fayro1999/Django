@@ -1,63 +1,22 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 import random
 import string
+from django.conf import settings  # For referencing AUTH_USER_MODEL
 
-class DispatchRiderManager(BaseUserManager):
-    def create_user(self, email, phone, company, location, password=None):
-        if not email:
-            raise ValueError('The Email field must be set')
-        
-        user = self.model(
-            email=self.normalize_email(email),
-            phone=phone,
-            company=company,
-            location=location,
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, phone, company, location, password=None):
-        user = self.create_user(
-            email=email,
-            phone=phone,
-            company=company,
-            location=location,
-            password=password,
-        )
-        user.is_admin = True
-        user.is_active = True
-        user.save(using=self._db)
-        return user
-
-
-class DispatchRider(AbstractBaseUser):
-    email = models.EmailField(unique=True, default="placeholder@example.com")
+class DispatchRider(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,  # Link to CustomUser
+        on_delete=models.CASCADE,
+        related_name="dispatch_rider_profile",
+        null=True
+    )
     phone = models.CharField(max_length=20, null=True, blank=True, default="0000000000")
     company = models.CharField(max_length=100)
     location = models.CharField(max_length=255)
     rider_id = models.CharField(max_length=12, unique=True, blank=True)  # Rider ID field
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
-
-    objects = DispatchRiderManager()
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone', 'company', 'location']  # Fields required for superuser creation
 
     def __str__(self):
-        return self.email
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
-
-    @property
-    def is_staff(self):
-        return self.is_admin
+        return f"Dispatch Rider: {self.user.email}"
 
     # Custom save method to generate rider_id
     def save(self, *args, **kwargs):
