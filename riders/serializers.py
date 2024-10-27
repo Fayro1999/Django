@@ -6,23 +6,21 @@ User = get_user_model()
 
 class DispatchRiderSerializer(serializers.ModelSerializer):
     rider_id = serializers.CharField(read_only=True)  # Add rider_id as read-only
-    email = serializers.SerializerMethodField()  # Use serializer method field for email
-
+    email = serializers.EmailField(write_only=True)  # Set email as write-only field for input
 
     class Meta:
         model = DispatchRider
-        fields = ['email', 'phone', 'company', 'location', 'password', 'rider_id']
+        fields = ['email', 'phone', 'company', 'location', 'rider_id']  # Removed password from here
         extra_kwargs = {
-            'password': {'write_only': True},  # Ensure password is write-only
+            'phone': {'required': True},
+            'company': {'required': True},
+            'location': {'required': True},
+            'rider_id': {'read_only': True},  # Ensure rider_id is read-only
         }
-
-    def get_email(self, obj):
-        return obj.user.email if obj.user else None  # Access email from user profile
-
 
     def create(self, validated_data):
         email = validated_data.pop('email')  # Extract the email
-        password = validated_data.pop('password')  # Extract the password
+        password = self.context['request'].data.get('password')  # Get password from context
 
         # Create the user instance with email as the username
         user = User(email=email)  # Create a User instance with email
@@ -32,3 +30,6 @@ class DispatchRiderSerializer(serializers.ModelSerializer):
         # Create the DispatchRider instance linked to the user
         dispatch_rider = DispatchRider.objects.create(user=user, **validated_data)
         return dispatch_rider
+
+    def get_email(self, obj):
+        return obj.user.email if obj.user else None  # Access email from user profile

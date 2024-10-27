@@ -19,7 +19,7 @@ class RegisterDispatchRiderView(APIView):
     permission_classes = [AllowAny]  # Allow anyone to register
 
     def post(self, request, *args, **kwargs):
-        serializer = DispatchRiderSerializer(data=request.data)
+        serializer = DispatchRiderSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "Dispatch rider registered successfully"}, status=status.HTTP_201_CREATED)
