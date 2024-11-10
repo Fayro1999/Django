@@ -22,8 +22,16 @@ class DispatchRiderSerializer(serializers.ModelSerializer):
         email = validated_data.pop('email')  # Extract the email
         password = self.context['request'].data.get('password')  # Get password from context
 
+
+        # Check if a user with the given email already exists
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": "A user with this email already exists."})
+
+        # Generate a unique username if required by the CustomUser model
+        unique_username = email.split('@')[0] + get_random_string(6)
+
         # Create the user instance with email as the username
-        user = User(email=email)  # Create a User instance with email
+        user = User(email=email, username=unique_username)  # Create a User instance with email
         user.set_password(password)  # Set the password
         user.save()  # Save the user instance
 

@@ -193,7 +193,7 @@ DATABASES = {
 }
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://eazzi_rk40_user:xjrHsgNqFbJGb0AhAvtR2VN9i9GKyXeE@dpg-cse2p95ds78s739h9160-a.oregon-postgres.render.com/eazzi_rk40')
+    'default': dj_database_url.config(default='postgresql://eazzi_5wxm_user:gjpHVeJH0acJTq3Qeko4ymX5rJ0Nq5ux@dpg-cso8mvqj1k6c73bd62bg-a.oregon-postgres.render.com/eazzi_5wxm')
 }
 
 # Password validation
