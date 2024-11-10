@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import DispatchRider
 from django.contrib.auth import get_user_model
+from django.utils.crypto import get_random_string 
 
 User = get_user_model()
 
