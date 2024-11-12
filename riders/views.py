@@ -48,7 +48,7 @@ class LoginDispatchRiderView(APIView):
 
 
 class ListDispatchRidersView(APIView):
-    permission_classes = [AllowAny, IsAdminUser]  # Only admin users can list dispatch riders
+    permission_classes = [AllowAny]  # Only admin users can list dispatch riders
 
     def get(self, request, *args, **kwargs):
         riders = DispatchRider.objects.all()
