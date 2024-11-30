@@ -121,7 +121,7 @@ class VerifyEmailView(APIView):
             return Response({"error": "Invalid or expired code"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = StoreUserProfile.objects.get(email=email)
+            user = StoreUserProfile.objects.get(user__email=email)
         except StoreUserProfile.DoesNotExist:
             logger.error('User not found for email: %s', email)
             return Response({"error": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
@@ -276,13 +276,7 @@ class ReferenceView(APIView):
 
 
 
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .models import StoreUserProfile, StoreDetails
-from .serializers import StoreDetailsSerializer
-from products.models import Product
-from products.serializers import ProductSerializer
+
 
 class StoreDetailsView(APIView):
     def get(self, request, *args, **kwargs):
