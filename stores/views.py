@@ -151,7 +151,7 @@ class ResendCodeView(APIView):
                 return Response({"error": "This account is already verified."}, status=status.HTTP_400_BAD_REQUEST)
 
             # Generate a verification code
-            code = token_generator.make_token(store_user_profile)
+            code = token_generator.make_token(store_user_profile.user)
 
             # Send verification email
             send_mail(
