@@ -162,6 +162,11 @@ class ResendCodeView(APIView):
         except StoreUserProfile.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
 
+        if not store_user_profile.user.is_active:
+            logger.error('User is not active: %s', email)
+            return Response({"error": "User is not active"}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class SetPasswordView(APIView):
