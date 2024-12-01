@@ -143,7 +143,7 @@ class ResendCodeView(APIView):
 
         try:
             user = StoreUserProfile.objects.get(user__email=email)
-            if user.is_active:
+            if store_user_profile.user.is_active:
                 return Response({"error": "This account is already verified."}, status=status.HTTP_400_BAD_REQUEST)
 
             code = token_generator.make_token(user)
@@ -161,11 +161,6 @@ class ResendCodeView(APIView):
 
         except StoreUserProfile.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not store_user_profile.user.is_active:
-            logger.error('User is not active: %s', email)
-            return Response({"error": "User is not active"}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 
