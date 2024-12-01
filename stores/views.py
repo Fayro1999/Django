@@ -138,24 +138,36 @@ class ResendCodeView(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
 
+        # Check if email is provided
         if not email:
             return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = StoreUserProfile.objects.get(user__email=email)
-            if user.user.is_active:
+            # Fetch the StoreUserProfile using the related User model's email
+            store_user_profile = StoreUserProfile.objects.get(user__email=email)
+
+            # Check if the user account is already active
+            if store_user_profile.user.is_active:
                 return Response({"error": "This account is already verified."}, status=status.HTTP_400_BAD_REQUEST)
 
-            code = token_generator.make_token(user)
+            # Generate a verification code
+            code = token_generator.make_token(store_user_profile)
+
+            # Send verification email
             send_mail(
                 'Email Verification',
                 f'Your verification code is {code}. It will expire in 10 minutes.',
                 settings.DEFAULT_FROM_EMAIL,
-                [user.email],
+                [store_user_profile.user.email],  # Correctly reference the related User model
                 fail_silently=False,
             )
 
-            cache.set(f'verify_{user.email}', {'email': user.email, 'code': code}, timeout=600)
+            # Cache the code and email for verification
+            cache.set(
+                f'verify_{store_user_profile.user.email}',
+                {'email': store_user_profile.user.email, 'code': code},
+                timeout=600
+            )
 
             return Response({'detail': 'Verification code resent.'}, status=status.HTTP_200_OK)
 
