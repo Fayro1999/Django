@@ -142,7 +142,7 @@ class ResendCodeView(APIView):
             return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = StoreUserProfile.objects.get(email=email)
+            user = StoreUserProfile.objects.get(user__email=email)
             if user.is_active:
                 return Response({"error": "This account is already verified."}, status=status.HTTP_400_BAD_REQUEST)
 
