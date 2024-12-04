@@ -385,6 +385,7 @@ class IndividualStoreProfileView(APIView):
 
 
 class StoreUserProfileDetailView(RetrieveAPIView):
+    permission_classes = [AllowAny]
     queryset = StoreUserProfile.objects.all()  # This will fetch all store profiles
     serializer_class = StoreSerializer  # The serializer you want to use to return the data
 
