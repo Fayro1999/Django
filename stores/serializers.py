@@ -5,6 +5,9 @@ from .models import StoreUserProfile
 from authent.models import CustomUser
 from authent.serializers import UserSerializer  # Assuming this serializer handles the user fields
 from .models import StoreDetails
+from products.models import Product
+from products.serializers import ProductSerializer
+
 
 class StoreSerializer(serializers.ModelSerializer):
     user = UserSerializer()  # Serialize the related user object
@@ -47,3 +50,29 @@ class StoreDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoreDetails
         fields = '__all__'
+
+
+
+class StoreProfileCombinedSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)  # Use existing UserSerializer for user details
+    store_details = serializers.SerializerMethodField()  # Add store details dynamically
+
+    class Meta:
+        model = StoreUserProfile
+        fields = ['user', 'groups', 'user_permissions', 'store_details', 'products']
+
+    def get_store_details(self, obj):
+        """
+        Dynamically fetch store details for the StoreUserProfile instance.
+        """
+        try:
+            store_details = StoreDetails.objects.get(store_user_profile=obj)
+            return StoreDetailsSerializer(store_details).data  # Use existing StoreDetailsSerializer
+        except StoreDetails.DoesNotExist:
+            return None
+
+
+    def get_products(self, obj):
+        # Fetch products associated with this store
+        products = Product.objects.filter(store_user_profile=obj)
+        return ProductSerializer(products, many=True).data

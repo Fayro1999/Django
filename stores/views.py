@@ -12,11 +12,13 @@ from .serializers import StoreDetailsSerializer
 from authent.models import CustomUser
 from stores.serializers import StoreSerializer #SetPasswordSerializer
 from authent.serializers import UserSerializer
+from .serializers import StoreProfileCombinedSerializer
 from authent.token_generator import TokenGenerator
 from products.models import Product
 from products.serializers import ProductSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
+from rest_framework.generics import RetrieveAPIView
 import logging
 
 logger = logging.getLogger(__name__)
@@ -348,5 +350,47 @@ class UpdateStoreProfileView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+class StoreProfileView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        store_user_profile = StoreUserProfile.objects.get(user=request.user)
+        serializer = StoreProfileCombinedSerializer(store_user_profile)
+        return Response(serializer.data)
+
+
+
+class IndividualStoreProfileView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, store_id=None, *args, **kwargs):
+        """
+        Fetch an individual store profile by store_id.
+        """
+        try:
+            # Fetch the StoreUserProfile using the store_id
+            store_user_profile = StoreUserProfile.objects.get(id=store_id)
+        except StoreUserProfile.DoesNotExist:
+            raise NotFound("Store profile not found.")
+
+        # Serialize the store profile
+        serializer = StoreProfileCombinedSerializer(store_user_profile)
+        return Response(serializer.data)
+
+
+
+
+class StoreUserProfileDetailView(RetrieveAPIView):
+    queryset = StoreUserProfile.objects.all()  # This will fetch all store profiles
+    serializer_class = StoreSerializer  # The serializer you want to use to return the data
+
+    # Optionally, you can override get_object to add more custom logic (e.g., based on a different field)
+    def get_object(self):
+        store_user_profile_id = self.kwargs['pk']  # Retrieve the 'pk' from the URL
+        return StoreUserProfile.objects.get(pk=store_user_profile_id)
 
 
