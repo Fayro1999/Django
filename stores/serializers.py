@@ -14,7 +14,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StoreUserProfile
-        fields = ['user', 'groups', 'user_permissions']
+        fields = ['id','user', 'groups', 'user_permissions']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')  # Remove 'user' from validated_data
