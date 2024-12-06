@@ -202,7 +202,7 @@ class LoginView(APIView):
         if not user_data:
             return Response({"error": "User data is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        email = user_data.get('email')  # Extract email from 'user'
+        email = user_data.get('username')  # Extract email from 'user'
         password = user_data.get('password')  # Extract password from 'user'
 
         if not email or not password:
@@ -211,7 +211,7 @@ class LoginView(APIView):
         user = authenticate(request, username=email, password=password)
         
         if user is not None:
-            if user.is_active:
+                if user.is_active:
                 token, created = Token.objects.get_or_create(user=user)
                 return Response({"token": token.key}, status=status.HTTP_200_OK)
             else:
