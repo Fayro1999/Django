@@ -198,13 +198,17 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        user_data = request.data.get('user')  # Extract the 'user' object
+        if not user_data:
+            return Response({"error": "User data is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = user_data.get('email')  # Extract email from 'user'
+        password = user_data.get('password')  # Extract password from 'user'
+
+        if not email or not password:
+            return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
         
-        if not username or not password:
-            return Response({"error": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=email, password=password)
         
         if user is not None:
             if user.is_active:
