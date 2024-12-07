@@ -210,22 +210,15 @@ class LoginView(APIView):
             return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
         
         user = authenticate(request, username=email, password=password)
-        if user is None:
-            # Debugging info
-            User = get_user_model()
-            existing_user = User.objects.filter(email=email).first()
-            if existing_user:
-                if not existing_user.check_password(password):
-                    return Response({"error": "Incorrect password."}, status=status.HTTP_400_BAD_REQUEST)
-                elif not existing_user.is_active:
-                    return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if user.is_active:
+        if user:
             token, created = Token.objects.get_or_create(user=user)
             return Response({"token": token.key}, status=status.HTTP_200_OK)
         else:
-            return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
 
 
