@@ -195,26 +195,39 @@ class SetPasswordView(APIView):
 
 
 
+
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        user_data = request.data.get('user')
+        user_data = request.data.get('user')  # Extract the 'user' object
         if not user_data:
             return Response({"error": "User data is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        email = user_data.get('email')
-        password = user_data.get('password')
+        email = user_data.get('email')  # Extract email
+        password = user_data.get('password')  # Extract password
 
         if not email or not password:
             return Response({"error": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
         
         user = authenticate(request, username=email, password=password)
-        if user:
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({"token": token.key}, status=status.HTTP_200_OK)
+        if user is not None:
+            if user.is_active:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({"token": token.key}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
+            # Debugging details
+            User = get_user_model()
+            existing_user = User.objects.filter(email=email).first()
+            if existing_user:
+                if not existing_user.check_password(password):
+                    return Response({"error": "Incorrect password."}, status=status.HTTP_400_BAD_REQUEST)
+                elif not existing_user.is_active:
+                    return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "User not found."}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
