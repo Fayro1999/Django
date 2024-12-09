@@ -133,7 +133,7 @@ class VerifyEmailView(APIView):
         user.user.save()
 
         # Generate an authentication token for the user
-        token, created = Token.objects.get_or_create(user=user)
+        token, created = Token.objects.get_or_create(user=user.user)
 
         return Response({
             "message": "Email verified successfully.",
