@@ -129,8 +129,8 @@ class VerifyEmailView(APIView):
             logger.error('User not found for email: %s', email)
             return Response({"error": "User not found"}, status=status.HTTP_400_BAD_REQUEST)
 
-        user.is_active = True
-        user.save()
+        user.user.is_active = True
+        user.user.save()
 
         return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
 
