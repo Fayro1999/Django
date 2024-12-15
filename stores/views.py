@@ -396,17 +396,12 @@ class IndividualStoreProfileView(APIView):
         """
         Fetch an individual store profile by store_id.
         """
-        try:
-            # Fetch the StoreUserProfile using the store_id
-            store_user_profile = StoreUserProfile.objects.get(id=store_id)
-        except StoreUserProfile.DoesNotExist:
-            raise NotFound("Store profile not found.")
-
-        # Serialize the store profile
-        serializer = StoreProfileCombinedSerializer(store_user_profile)
+        # Fetch the StoreDetails using the related store_id
+        store_details = get_object_or_404(StoreDetails, store_user_profile__id=store_id)
+        
+        # Serialize the store details
+        serializer = StoreProfileCombinedSerializer(store_details)
         return Response(serializer.data)
-
-
 
 
 class StoreUserProfileDetailView(RetrieveAPIView):
