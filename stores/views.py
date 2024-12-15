@@ -20,6 +20,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.authtoken.models import Token
+from django.shortcuts import get_object_or_404
 import logging
 
 logger = logging.getLogger(__name__)
