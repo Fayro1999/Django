@@ -76,5 +76,5 @@ class StoreProfileCombinedSerializer(serializers.ModelSerializer):
 
     def get_products(self, obj):
         # Fetch products associated with this store
-        products = Product.objects.filter(store_user_profile=obj)
+        products = Product.objects.filter(vendor=obj)
         return ProductSerializer(products, many=True).data
