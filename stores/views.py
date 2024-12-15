@@ -397,8 +397,8 @@ class IndividualStoreProfileView(APIView):
         """
         Fetch an individual store profile by store_id.
         """
-        # Fetch the StoreDetails using the related store_id
-        store_details = get_object_or_404(StoreDetails, store_user_profile__id=store_id)
+        # Fetch the StoreDetails by the related StoreUserProfile ID
+        store_details = get_object_or_404(StoreDetails, store_user_profile_id=store_id)
         
         # Serialize the store details
         serializer = StoreProfileCombinedSerializer(store_details)
