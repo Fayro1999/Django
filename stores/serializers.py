@@ -56,6 +56,8 @@ class StoreDetailsSerializer(serializers.ModelSerializer):
 class StoreProfileCombinedSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)  # Use existing UserSerializer for user details
     store_details = serializers.SerializerMethodField()  # Add store details dynamically
+    products = serializers.SerializerMethodField()  # Dynamically fetch products
+
 
     class Meta:
         model = StoreUserProfile
