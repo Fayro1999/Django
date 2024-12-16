@@ -63,16 +63,21 @@ class StoreProfileCombinedSerializer(serializers.ModelSerializer):
         model = StoreUserProfile
         fields = ['user', 'groups', 'user_permissions', 'store_details', 'products']
 
-    def get_store_details(self, obj):
-        print(f"Type of obj in get_store_details: {type(obj)}")
-        """
-        Dynamically fetch store details for the StoreUserProfile instance.
-        """
-        try:
-            store_details = StoreDetails.objects.get(store_user_profile=obj)
-            return StoreDetailsSerializer(store_details).data  # Use existing StoreDetailsSerializer
-        except StoreDetails.DoesNotExist:
-            return None
+    
+def get_store_details(self, obj):
+    # Check if obj is an instance of StoreUserProfile
+    if not isinstance(obj, StoreUserProfile):
+        raise ValueError(f"Expected StoreUserProfile instance, got {type(obj)}")
+    
+    try:
+        # Query StoreDetails using the StoreUserProfile instance
+        store_details = StoreDetails.objects.get(store_user_profile=obj)
+        # Serialize and return the store details
+        return StoreDetailsSerializer(store_details).data
+    except StoreDetails.DoesNotExist:
+        # Return None if no store details are found
+        return None
+
 
 
     def get_products(self, obj):

@@ -391,17 +391,16 @@ class StoreProfileView(APIView):
 
 
 class IndividualStoreProfileView(APIView):
-    def get(self, request, store_id=None):
+   def get(self, request, store_id=None):
         """
         Handle GET request to fetch a store profile by ID.
         """
         try:
-            # Fetch the store user profile by ID
             store_user_profile = StoreUserProfile.objects.get(id=store_id)
         except StoreUserProfile.DoesNotExist:
             raise NotFound(detail="StoreUserProfile not found.")
 
-        # Pass the profile to the serializer
+        # Pass the correct StoreUserProfile to the serializer
         serializer = StoreProfileCombinedSerializer(store_user_profile)
         return Response(serializer.data)
 
