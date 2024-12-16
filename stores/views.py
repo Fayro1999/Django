@@ -138,7 +138,8 @@ class VerifyEmailView(APIView):
 
         return Response({
             "message": "Email verified successfully.",
-            "token": token.key  # Return the token for authentication
+            "token": token.key,  # Return the token for authentication
+            "id": user.user.id
         }, status=status.HTTP_200_OK)
 
 class ResendCodeView(APIView):
@@ -221,7 +222,7 @@ class LoginView(APIView):
         if user is not None:
             if user.is_active:
                 token, created = Token.objects.get_or_create(user=user)
-                return Response({"token": token.key, "message": "Login successful."}, status=status.HTTP_200_OK)
+                return Response({"token": token.key, "id":user.user.id, "message": "Login successful."}, status=status.HTTP_200_OK)
             else:
                 return Response({"error": "This account is inactive."}, status=status.HTTP_400_BAD_REQUEST)
         else:
