@@ -25,7 +25,7 @@ class StoreUserProfile(models.Model):
 
 
 class StoreDetails(models.Model):
-    store_user_profile = models.OneToOneField(StoreUserProfile, on_delete=models.CASCADE)
+    store_user_profile = models.OneToOneField(StoreUserProfile, on_delete=models.CASCADE, related_name='store_details')
     store_name = models.CharField(max_length=255)
     store_address = models.CharField(max_length=255)
     street = models.CharField(max_length=255)

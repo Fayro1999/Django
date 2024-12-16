@@ -59,6 +59,7 @@ class StoreProfileCombinedSerializer(serializers.ModelSerializer):
         fields = ['user', 'groups', 'user_permissions', 'store_details', 'products']
 
     def get_store_details(self, obj):
+        print("Debugging `get_store_details`: obj =", obj, "type =", type(obj))
         """
         Dynamically fetch store details for the StoreUserProfile instance.
         """
