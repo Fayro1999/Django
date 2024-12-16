@@ -1,6 +1,4 @@
 from rest_framework import serializers
-from rest_framework import serializers
-from rest_framework import serializers
 from .models import StoreUserProfile
 from authent.models import CustomUser
 from authent.serializers import UserSerializer  # Assuming this serializer handles the user fields
@@ -14,7 +12,7 @@ class StoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StoreUserProfile
-        fields = ['id','user', 'groups', 'user_permissions']
+        fields = ['id', 'user', 'groups', 'user_permissions']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')  # Remove 'user' from validated_data
@@ -45,12 +43,10 @@ class StoreSerializer(serializers.ModelSerializer):
         return store_user_profile
 
 
-
 class StoreDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoreDetails
         fields = '__all__'
-
 
 
 class StoreProfileCombinedSerializer(serializers.ModelSerializer):
@@ -58,29 +54,27 @@ class StoreProfileCombinedSerializer(serializers.ModelSerializer):
     store_details = serializers.SerializerMethodField()  # Add store details dynamically
     products = serializers.SerializerMethodField()  # Dynamically fetch products
 
-
     class Meta:
         model = StoreUserProfile
         fields = ['user', 'groups', 'user_permissions', 'store_details', 'products']
 
-    
-def get_store_details(self, obj):
-    # Check if obj is an instance of StoreUserProfile
-    if not isinstance(obj, StoreUserProfile):
-        raise ValueError(f"Expected StoreUserProfile instance, got {type(obj)}")
-    
-    try:
-        # Query StoreDetails using the StoreUserProfile instance
-        store_details = StoreDetails.objects.get(store_user_profile=obj)
-        # Serialize and return the store details
-        return StoreDetailsSerializer(store_details).data
-    except StoreDetails.DoesNotExist:
-        # Return None if no store details are found
-        return None
+    def get_store_details(self, obj):
+        """
+        Dynamically fetch store details for the StoreUserProfile instance.
+        """
+        if not isinstance(obj, StoreUserProfile):
+            raise ValueError(f"Expected StoreUserProfile instance, got {type(obj)}")
 
-
+        try:
+            # Fetch the store details based on the StoreUserProfile instance
+            store_details = StoreDetails.objects.get(store_user_profile=obj)
+            return StoreDetailsSerializer(store_details).data
+        except StoreDetails.DoesNotExist:
+            return None
 
     def get_products(self, obj):
-        # Fetch products associated with this store
+        """
+        Fetch products associated with this store.
+        """
         products = Product.objects.filter(vendor=obj)
         return ProductSerializer(products, many=True).data
