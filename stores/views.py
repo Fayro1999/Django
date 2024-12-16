@@ -398,6 +398,7 @@ class IndividualStoreProfileView(APIView):
         try:
             # Ensure you query the StoreUserProfile by ID, not by name
             store_user_profile = StoreUserProfile.objects.get(id=store_id)
+            print(f"Type of object passed to serializer: {type(store_user_profile)}")
         except StoreUserProfile.DoesNotExist:
             raise NotFound(detail="StoreUserProfile not found.")
 
