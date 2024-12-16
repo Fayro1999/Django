@@ -391,15 +391,19 @@ class StoreProfileView(APIView):
 
 
 class IndividualStoreProfileView(APIView):
-  def get_store_details(self, obj):
-    if not isinstance(obj, StoreUserProfile):
-        raise ValueError(f"Expected StoreUserProfile instance, got {type(obj)}")
-    try:
-        store_details = StoreDetails.objects.get(store_user_profile=obj)
-        return StoreDetailsSerializer(store_details).data
-    except StoreDetails.DoesNotExist:
-        return None
+    def get(self, request, store_id=None):
+        """
+        Handle GET request to fetch a store profile by ID.
+        """
+        try:
+            # Fetch the store user profile by ID
+            store_user_profile = StoreUserProfile.objects.get(id=store_id)
+        except StoreUserProfile.DoesNotExist:
+            raise NotFound(detail="StoreUserProfile not found.")
 
+        # Pass the profile to the serializer
+        serializer = StoreProfileCombinedSerializer(store_user_profile)
+        return Response(serializer.data)
 
 class StoreUserProfileDetailView(RetrieveAPIView):
     permission_classes = [AllowAny]
