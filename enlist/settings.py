@@ -16,11 +16,12 @@ import json
 import os
 import firebase_admin
 from decouple import config
+from dotenv import load_dotenv
 from firebase_admin import credentials, initialize_app
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv() 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -116,7 +117,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-EMAIL_HOST_USER = 'eazzi.eservice@gmail.com'  # Your email address
+#EMAIL_HOST_USER = 'eazzi.eservice@gmail.com'  # Your email address
 #EMAIL_HOST_PASSWORD = 'bify enmn ycra mwyv'  # Your email password
 #DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
