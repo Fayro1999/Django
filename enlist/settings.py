@@ -202,17 +202,17 @@ DATABASES = {
     }
 }
 
-#DATABASES = {
-    #'default': dj_database_url.config(default='postgresql://eazzi_n6q0_user:SMF1JW315zCfEgxGd7N0QBqqDMDUYQKb@dpg-cteig9lumphs73be1csg-a.oregon-postgres.render.com/eazzi_n6q0')
-#}
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
+    'default': dj_database_url.config(default='postgresql://eazzi_n6q0_user:SMF1JW315zCfEgxGd7N0QBqqDMDUYQKb@dpg-cteig9lumphs73be1csg-a.oregon-postgres.render.com/eazzi_n6q0')
 }
+
+#DATABASES = {
+    #'default': dj_database_url.config(
+        #default=os.getenv('DATABASE_URL'),
+        #conn_max_age=600,
+        #ssl_require=True
+    #)
+#}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
