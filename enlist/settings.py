@@ -15,10 +15,16 @@ import dj_database_url
 import json
 import os
 import firebase_admin
+from decouple import config
+from dotenv import load_dotenv
 from firebase_admin import credentials, initialize_app
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+print(os.getcwd())  
+print(f"SECRET_KEY: {os.getenv('SECRET_KEY')}")
+print(f"DATABASE_URL: {os.getenv('DATABASE_URL')}")
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,9 +32,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-xjk(30nqy16&vpmac257a9hoe%j3x49k)demqmm869da+pb0@y'
+#SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = False
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['django-7u8g.onrender.com', 'localhost', '127.0.0.1']
 
@@ -111,6 +119,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+#EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+#EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_HOST_USER = 'eazzi.eservice@gmail.com'  # Your email address
 EMAIL_HOST_PASSWORD = 'bify enmn ycra mwyv'  # Your email password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
@@ -195,6 +205,14 @@ DATABASES = {
 DATABASES = {
     'default': dj_database_url.config(default='postgresql://eazzi_n6q0_user:SMF1JW315zCfEgxGd7N0QBqqDMDUYQKb@dpg-cteig9lumphs73be1csg-a.oregon-postgres.render.com/eazzi_n6q0')
 }
+
+#DATABASES = {
+    #'default': dj_database_url.config(
+        #default=os.getenv('DATABASE_URL'),
+        #conn_max_age=600,
+        #ssl_require=True
+    #)
+#}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -338,5 +356,4 @@ else:
 
 # Load the credentials from the JSON string
 #cred = credentials.Certificate(json.loads(firebase_key_json))
-
 
