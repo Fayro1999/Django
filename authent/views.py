@@ -99,9 +99,9 @@ class VerifyEmailView(APIView):
 
         user.is_active = True
         user.save()
-        token, created = Token.objects.get_or_create(user=user)
+        #token, created = Token.objects.get_or_create(user=user)
 
-        return Response({"message": "Email verified successfully", "id": user.id, "token": token.key,}, status=status.HTTP_200_OK)
+        return Response({"message": "Email verified successfully"}, status=status.HTTP_200_OK)
 
 
 
