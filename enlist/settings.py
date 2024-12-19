@@ -22,9 +22,9 @@ from firebase_admin import credentials, initialize_app
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
-print(os.getcwd())  
-print(f"SECRET_KEY: {os.getenv('SECRET_KEY')}")
-print(f"DATABASE_URL: {os.getenv('DATABASE_URL')}")
+#print(os.getcwd())  
+#print(f"SECRET_KEY: {os.getenv('SECRET_KEY')}")
+#print(f"DATABASE_URL: {os.getenv('DATABASE_URL')}")
 
 
 # Quick-start development settings - unsuitable for production
@@ -35,8 +35,8 @@ SECRET_KEY = 'django-insecure-xjk(30nqy16&vpmac257a9hoe%j3x49k)demqmm869da+pb0@y
 #SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = False
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
+#DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['django-7u8g.onrender.com', 'localhost', '127.0.0.1']
 
@@ -256,6 +256,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOW_CREDENTIALS = True 
+
 # JWT settings
 JWT_AUTH_COOKIE = 'my-app-auth'
 JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
@@ -356,4 +358,5 @@ else:
 
 # Load the credentials from the JSON string
 #cred = credentials.Certificate(json.loads(firebase_key_json))
+
 
