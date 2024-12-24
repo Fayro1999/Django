@@ -133,13 +133,20 @@ class VerifyEmailView(APIView):
         user.user.is_active = True
         user.user.save()
 
+        store_id = getattr(StoreUserProfile, 'store', None) 
+
+        if not store_id:
+            logger.error('Store ID not found for user profile.')
+            return Response({"error": "Store ID not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+
         # Generate an authentication token for the user
         token, created = Token.objects.get_or_create(user=user.user)
 
         return Response({
             "message": "Email verified successfully.",
             "token": token.key,  # Return the token for authentication
-            "id": user.user.id
+            "store_id": store_id.id
         }, status=status.HTTP_200_OK)
 
 class ResendCodeView(APIView):
