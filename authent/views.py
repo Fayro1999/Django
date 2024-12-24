@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 token_generator = TokenGenerator()
 CustomUser = get_user_model()
 
+
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -130,7 +131,8 @@ class ResendCodeView(APIView):
                 fail_silently=False,
             )
 
-            cache.set(f'verify_{user.email}', {'email': user.email, 'code': code}, timeout=600)  # Store for 10 minutes
+            cache.set(f'verify_{user.email}', {'email': user.email, 'code': code}, timeout=600) # Store for 10 minutes
+            print(cache.get(f'verify_{code}'))
 
             return Response({'detail': 'Verification code resent.'}, status=status.HTTP_200_OK)
 
