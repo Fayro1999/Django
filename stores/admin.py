@@ -1,6 +1,11 @@
-# stores/admin.py
 from django.contrib import admin
-from .models import StoreUserProfile
+from .models import StoreUserProfile, StoreDetails
+
+class StoreDetailsInline(admin.StackedInline):
+    model = StoreDetails
+    extra = 0
+    # Removed created_at and updated_at from readonly_fields
+    readonly_fields = []
 
 @admin.register(StoreUserProfile)
 class StoreUserProfileAdmin(admin.ModelAdmin):
@@ -10,7 +15,10 @@ class StoreUserProfileAdmin(admin.ModelAdmin):
     filter_horizontal = ('groups', 'user_permissions')  # Enable horizontal filter for ManyToMany fields
     raw_id_fields = ('user',)  # Display user as a raw ID field if necessary
 
-    # If you want to customize the form used in the admin interface
+    # Add StoreDetails as an inline section
+    inlines = [StoreDetailsInline]
+
+    # Customizing the form in the admin interface
     fieldsets = (
         (None, {
             'fields': ('user',)
@@ -19,6 +27,7 @@ class StoreUserProfileAdmin(admin.ModelAdmin):
             'fields': ('groups', 'user_permissions')
         }),
     )
+
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
