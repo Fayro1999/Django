@@ -5,7 +5,7 @@ from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from stores.models import StoreUserProfile
 from .models import StoreDetails
 from .serializers import StoreDetailsSerializer
@@ -21,6 +21,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 import logging
 
 logger = logging.getLogger(__name__)
@@ -364,6 +365,20 @@ class StoreDetailsView(APIView):
             return Response({'detail': 'Store details added successfully.'}, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class StoreDetailsListView(ListAPIView):
+    queryset = StoreDetails.objects.all()
+    serializer_class = StoreDetailsSerializer
+    permission_classes = [IsAuthenticated]  # You can adjust permissions as needed
+
+# View for retrieving a single store's details
+class StoreDetailView(RetrieveAPIView):
+    queryset = StoreDetails.objects.all()
+    serializer_class = StoreDetailsSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'  # Use 'id' or another unique field in your model
 
 
 
