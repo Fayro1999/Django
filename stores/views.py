@@ -371,13 +371,13 @@ class StoreDetailsView(APIView):
 class StoreDetailsListView(ListAPIView):
     queryset = StoreDetails.objects.all()
     serializer_class = StoreDetailsSerializer
-    permission_classes = [IsAuthenticated]  # You can adjust permissions as needed
+    permission_classes = [AllowAny]  # You can adjust permissions as needed
 
 # View for retrieving a single store's details
 class StoreDetailView(RetrieveAPIView):
     queryset = StoreDetails.objects.all()
     serializer_class = StoreDetailsSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     lookup_field = 'id'  # Use 'id' or another unique field in your model
 
 

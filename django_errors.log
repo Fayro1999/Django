@@ -386,3 +386,5 @@ NameError: name 'Sum' is not defined. Did you mean: 'sum'?
 "GET /api/analytics/statistics/10/ HTTP/1.1" 500 98447
 Internal Server Error: /api/authent/register/
 "POST /api/authent/register/ HTTP/1.1" 500 60
+Internal Server Error: /api/authent/register/
+"POST /api/authent/register/ HTTP/1.1" 500 60

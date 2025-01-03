@@ -2,6 +2,7 @@ from analytics.models import StoreCart
 from cart.models import Cart
 from products.models import Product
 from django.utils import timezone
+from rest_framework.decorators import api_view
 
 def add_to_cart(request, store_id, product_id):
     product = Product.objects.get(id=product_id)
@@ -21,3 +22,16 @@ def add_to_cart(request, store_id, product_id):
         cart_date=timezone.now().date(),
         defaults={'cart_count': models.F('cart_count') + 1}
     )
+
+
+@api_view(['GET'])
+#@permission_classes([AllowAny])  # Ensure user authenticatio
+def get_cart(request):
+    # Fetch cart items for the logged-in user
+    cart_items = Cart.objects.filter(user=request.user.storeuserprofile)
+
+    # Serialize the data
+    serializer = CartSerializer(cart_items, many=True)
+
+    # Return the response
+    return Response(serializer.data)
