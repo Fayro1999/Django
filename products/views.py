@@ -16,6 +16,21 @@ class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
 
     
+class ProductUpdateView(generics.UpdateAPIView):
+    permission_classes = [AllowAny]  # Adjust permissions as needed
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'id'  # Use 'id' or another unique field in the model
+
+# Delete product view
+class ProductDeleteView(generics.DestroyAPIView):
+    permission_classes = [AllowAny]  # Adjust permissions as needed
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'id'  # Use 'id' or another unique field in the model
+
+
+
     def get_queryset(self):
         vendor_id = self.request.query_params.get('vendor_id')
         if vendor_id:

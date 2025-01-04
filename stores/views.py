@@ -18,7 +18,7 @@ from products.models import Product
 from products.serializers import ProductSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -373,12 +373,30 @@ class StoreDetailsListView(ListAPIView):
     serializer_class = StoreDetailsSerializer
     permission_classes = [AllowAny]  # You can adjust permissions as needed
 
+
 # View for retrieving a single store's details
 class StoreDetailView(RetrieveAPIView):
     queryset = StoreDetails.objects.all()
     serializer_class = StoreDetailsSerializer
     permission_classes = [AllowAny]
     lookup_field = 'id'  # Use 'id' or another unique field in your model
+
+
+# View for updating a single store's details
+class StoreDetailUpdateView(UpdateAPIView):
+    queryset = StoreDetails.objects.all()
+    serializer_class = StoreDetailsSerializer
+    permission_classes = [AllowAny]  # Adjust permissions as needed
+    lookup_field = 'id'  # Use 'id' or another unique field
+    
+
+# View for deleting a single store's details
+class StoreDetailDeleteView(DestroyAPIView):
+    queryset = StoreDetails.objects.all()
+    serializer_class = StoreDetailsSerializer
+    permission_classes = [AllowAny]  # Adjust permissions as needed
+    lookup_field = 'id'  # Use 'id' or another unique field
+
 
 
 

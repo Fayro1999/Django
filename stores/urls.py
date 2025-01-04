@@ -15,7 +15,9 @@ from .views import (
     IndividualStoreProfileView,
     StoreUserProfileDetailView,
     StoreDetailsListView,
-    StoreDetailView
+    StoreDetailView,
+    StoreDetailUpdateView,
+     StoreDetailDeleteView
 
 
 )
@@ -37,5 +39,7 @@ urlpatterns = [
     path('store/<int:pk>/', StoreUserProfileDetailView.as_view(), name='store-user-profile-detail'),
     path('storeslist/', StoreDetailsListView.as_view(), name='store-details-list'),
     path('storeslist/<int:id>/', StoreDetailView.as_view(), name='store-detail'),
+    path('store-details/<int:id>/update/', StoreDetailUpdateView.as_view(), name='store-detail-update'),
+    path('store-details/<int:id>/delete/', StoreDetailDeleteView.as_view(), name='store-detail-delete'),
 
 ]
