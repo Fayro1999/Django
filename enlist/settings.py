@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'fcm_django',
     'store_locations',
     'search',
+
     
 
 
@@ -203,7 +204,7 @@ DATABASES = {
 }
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://eazzi_n6q0_user:SMF1JW315zCfEgxGd7N0QBqqDMDUYQKb@dpg-cteig9lumphs73be1csg-a.oregon-postgres.render.com/eazzi_n6q0')
+    'default': dj_database_url.config(default='postgresql://eazzi_pk4k_user:g73RuAEPEcaqYBUuzljbYAUQnOSasHlz@dpg-cultee3qf0us7384gkrg-a.oregon-postgres.render.com/eazzi_pk4k')
 }
 
 #DATABASES = {
