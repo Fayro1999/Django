@@ -323,48 +323,43 @@ class ReferenceView(APIView):
 
 
 class StoreDetailsView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure authentication
     def get(self, request, *args, **kwargs):
-        # Get store by primary key (pk) provided in URL
         store_id = kwargs.get('pk')
         try:
             store = StoreDetails.objects.get(pk=store_id)
         except StoreDetails.DoesNotExist:
             return Response({'error': 'Store not found.'}, status=status.HTTP_404_NOT_FOUND)
-        
-        # Serialize store details
+
         store_data = StoreDetailsSerializer(store).data
-        
-        # Fetch products associated with this store
-        products = Product.objects.filter(vendor=store)
+        products = Product.objects.filter(store=store)  # Ensure correct field name
         products_data = ProductSerializer(products, many=True).data
-        
-        # Combine store details and products
+
         store_data['products'] = products_data
-        
         return Response(store_data)
-    
+
     def post(self, request, *args, **kwargs):
-        # Ensure the user is authenticated
         if not request.user.is_authenticated:
             return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            # Retrieve the StoreUserProfile for the authenticated user
             store_user_profile = StoreUserProfile.objects.get(user=request.user)
         except StoreUserProfile.DoesNotExist:
             return Response({'error': 'Store user profile not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Include store_user_profile ID in the incoming data
         data = request.data.copy()
         data['store_user_profile'] = store_user_profile.id
 
-        # Serialize and validate the incoming data
         serializer = StoreDetailsSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'detail': 'Store details added successfully.'}, status=status.HTTP_201_CREATED)
-        
+            store = serializer.save()
+            return Response({
+                'detail': 'Store details added successfully.',
+                'store_id': store.id  # Return the store ID
+            }, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
