@@ -323,7 +323,7 @@ class ReferenceView(APIView):
 
 
 class StoreDetailsView(APIView):
-    permission_classes = [AllowAny]  # Ensure authentication
+    permission_classes = [IsAuthenticated]  # Ensure authentication
     def get(self, request, *args, **kwargs):
         store_id = kwargs.get('pk')
         try:
