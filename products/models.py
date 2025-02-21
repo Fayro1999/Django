@@ -10,6 +10,8 @@ class Product(models.Model):
     image = models.ImageField(upload_to='product_images/') 
     vendor = models.ForeignKey(StoreDetails, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
     views = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True, null=True,  blank=True)  # Automatically sets the timestamp when a product is created
+
 
     def increment_views(self):
         """Increment product views and save to database"""
