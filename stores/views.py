@@ -407,7 +407,7 @@ class StoreDetailUpdateView(UpdateAPIView):
     serializer_class = StoreDetailsSerializer
     permission_classes = [AllowAny]  # Adjust permissions as needed
     lookup_field = 'id'  # Use 'id' or another unique field
-     parser_classes = (MultiPartParser, FormParser)  # Enable file uploads
+    parser_classes = (MultiPartParser, FormParser)  # Enable file uploads
     
 
 # View for deleting a single store's details
