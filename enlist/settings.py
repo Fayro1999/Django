@@ -204,7 +204,7 @@ DATABASES = {
 }
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://eazzi_pk4k_user:g73RuAEPEcaqYBUuzljbYAUQnOSasHlz@dpg-cultee3qf0us7384gkrg-a.oregon-postgres.render.com/eazzi_pk4k')
+    'default': dj_database_url.config(default='postgresql://eazzi_iclx_user:1WxEzIgEURkeZhkEn1esYnUrygu4mbIs@dpg-cv9uj1btq21c73bomhgg-a.oregon-postgres.render.com/eazzi_iclx')
 }
 
 #DATABASES = {
