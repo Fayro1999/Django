@@ -403,13 +403,22 @@ class StoreDetailView(RetrieveAPIView):
     lookup_field = 'id'  # Use 'id' or another unique field in your model
 
 
-# View for updating a single store's details
 class StoreDetailUpdateView(UpdateAPIView):
     queryset = StoreDetails.objects.all()
     serializer_class = StoreDetailsSerializer
     permission_classes = [AllowAny]  # Adjust permissions as needed
     lookup_field = 'id'  # Use 'id' or another unique field
     parser_classes = (MultiPartParser, FormParser)  # Enable file uploads
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)  # <-- Here
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Store details updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 # View for deleting a single store's details
