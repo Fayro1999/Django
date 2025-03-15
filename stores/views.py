@@ -22,6 +22,8 @@ from rest_framework.generics import RetrieveAPIView, UpdateAPIView, DestroyAPIVi
 from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
+
 import logging
 
 logger = logging.getLogger(__name__)
