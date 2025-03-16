@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Count
 from .models import Product
@@ -8,9 +8,13 @@ from .serializers import ProductSerializer
 
 # Creating product view
 class ProductCreateView(generics.CreateAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+    def get_serializer_context(self):
+        """Pass request context to serializer"""
+        return {'request': self.request}
 
 # List product view with sorting and store filtering
 class ProductListView(generics.ListAPIView):
