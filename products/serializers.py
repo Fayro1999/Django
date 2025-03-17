@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Product
+from stores.models import StoreUserProfile  # Import StoreUserProfile
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,8 +11,10 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')  # Get request from context
         if request and hasattr(request, "user") and request.user.is_authenticated:
-            if hasattr(request.user, "StoreDetails"):
-                validated_data['vendor'] = request.user.StoreDetails  # Assign store
+            store_profile = StoreUserProfile.objects.filter(user=request.user).first()  # Get Store Profile
+            if store_profile and hasattr(store_profile, "store_details"):  # Check if StoreDetails exists
+                validated_data['vendor'] = store_profile.store_details  # ✅ Correctly assign StoreDetails
             else:
                 raise serializers.ValidationError("You must have a store to create a product.")
         return super().create(validated_data)
+
