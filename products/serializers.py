@@ -10,8 +10,8 @@ class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')  # Get request from context
         if request and hasattr(request, "user") and request.user.is_authenticated:
-            if hasattr(request.user, "store_details"):
-                validated_data['vendor'] = request.user.store_details  # Assign store
+            if hasattr(request.user, "StoreDetails"):
+                validated_data['vendor'] = request.user.StoreDetails  # Assign store
             else:
                 raise serializers.ValidationError("You must have a store to create a product.")
         return super().create(validated_data)
