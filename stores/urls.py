@@ -17,7 +17,8 @@ from .views import (
     StoreDetailsListView,
     StoreDetailView,
     StoreDetailUpdateView,
-     StoreDetailDeleteView
+     StoreDetailDeleteView,
+     LogoutView
 
 
 )
@@ -41,5 +42,5 @@ urlpatterns = [
     path('storeslist/<int:id>/', StoreDetailView.as_view(), name='store-detail'),
     path('store-details/<int:id>/update/', StoreDetailUpdateView.as_view(), name='store-detail-update'),
     path('store-details/<int:id>/delete/', StoreDetailDeleteView.as_view(), name='store-detail-delete'),
-
+    path('logout/', LogoutView.as_view(), name='store-logout'), 
 ]

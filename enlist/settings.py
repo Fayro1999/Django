@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'fcm_django',
     'store_locations',
     'search',
+    'reviews',
 
     
 

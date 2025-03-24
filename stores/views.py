@@ -23,6 +23,7 @@ from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.authentication import TokenAuthentication
 
 import logging
 
@@ -31,7 +32,7 @@ token_generator = TokenGenerator()
 CustomUser = get_user_model()
 
 class RegisterView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         print("Endpoint hit")
@@ -103,7 +104,7 @@ class RegisterView(APIView):
 
 
 class VerifyEmailView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         code = request.data.get('code')
@@ -483,3 +484,14 @@ class StoreUserProfileDetailView(RetrieveAPIView):
         return StoreUserProfile.objects.get(pk=store_user_profile_id)
 
 
+class LogoutView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            # Delete the user's authentication token
+            request.user.auth_token.delete()
+            return Response({"message": "Logout successful."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "Something went wrong."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
