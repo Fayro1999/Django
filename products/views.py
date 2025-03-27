@@ -5,6 +5,7 @@ from django.db.models import Count
 from .models import Product
 from stores.models import StoreUserProfile
 from .serializers import ProductSerializer
+from rest_framework.views import APIView
 
 # Creating product view
 class ProductCreateView(generics.CreateAPIView):
@@ -84,3 +85,10 @@ class ProductDeleteView(generics.DestroyAPIView):
         if vendor_id:
             return Product.objects.filter(vendor_id=vendor_id)
         return Product.objects.all()
+
+
+class StoreProductsView(APIView):
+    def get(self, request, store_id):
+        products = Product.objects.filter(store_id=store_id)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
