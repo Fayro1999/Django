@@ -16,6 +16,19 @@ class SavedProductListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
+        # Unsave a product
+class UnsaveProductView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = SavedProduct.objects.all()
+
+    def delete(self, request, *args, **kwargs):
+        product_id = kwargs.get("product_id")
+        saved_product = get_object_or_404(SavedProduct, user=request.user, product_id=product_id)
+        saved_product.delete()
+        return Response({"message": "Product unsaved"}, status=204)
+
+
 # Saving stores
 class SavedStoreListCreateView(generics.ListCreateAPIView):
     serializer_class = SavedStoreSerializer
@@ -26,6 +39,18 @@ class SavedStoreListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+        # Unsave a store
+class UnsaveStoreView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = SavedStore.objects.all()
+
+    def delete(self, request, *args, **kwargs):
+        store_id = kwargs.get("store_id")
+        saved_store = get_object_or_404(SavedStore, user=request.user, store_id=store_id)
+        saved_store.delete()
+        return Response({"message": "Store unsaved"}, status=204)
 
 # Reviews for products
 class ProductReviewListCreateView(generics.ListCreateAPIView):

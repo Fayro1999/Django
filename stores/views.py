@@ -32,7 +32,7 @@ token_generator = TokenGenerator()
 CustomUser = get_user_model()
 
 class RegisterView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         print("Endpoint hit")
@@ -104,7 +104,7 @@ class RegisterView(APIView):
 
 
 class VerifyEmailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         code = request.data.get('code')
