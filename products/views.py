@@ -89,6 +89,6 @@ class ProductDeleteView(generics.DestroyAPIView):
 
 class StoreProductsView(APIView):
     def get(self, request, store_id):
-        products = Product.objects.filter(store_id=store_id)
+        products = Product.objects.filter(vendor_id=store_id)
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
