@@ -6,6 +6,8 @@ from .models import Product
 from stores.models import StoreUserProfile
 from .serializers import ProductSerializer
 from rest_framework.views import APIView
+from rest_framework import status
+
 
 # Creating product view
 class ProductCreateView(generics.CreateAPIView):
