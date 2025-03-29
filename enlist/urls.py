@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -21,9 +22,13 @@ from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
 from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
+    client_class = OAuth2Client  # ✅ Required for OAuth2
+    callback_url = "http://localhost:5174/"  # ✅ Adjust this for production
 
 urlpatterns = [
     path('admin/', admin.site.urls),
