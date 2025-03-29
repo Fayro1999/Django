@@ -48,7 +48,7 @@ urlpatterns = [
     path('api/dispatch-riders/', include('riders.urls')),
     path('api/', include('store_locations.urls')),
     path('', include('search.urls')),
-    path('api/auth/google/', GoogleLogin.as_view(), name='google_login')
+    path('api/auth/google/login/token/', GoogleLogin.as_view(), name='google_login')
 ]
 
 if settings.DEBUG:
