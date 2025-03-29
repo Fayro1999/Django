@@ -25,11 +25,11 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
 
+ # ✅ Adjust this for production
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client  # ✅ Required for OAuth2
-    callback_url = "http://localhost:5174/"  # ✅ Adjust this for production
-
+    callback_url = "https://django-7u8g.onrender.com/api/auth/google/callback/"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/authent/', include('authent.urls')),
