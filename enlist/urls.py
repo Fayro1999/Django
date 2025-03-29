@@ -19,6 +19,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
+from dj_rest_auth.registration.views import SocialLoginView
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +31,7 @@ urlpatterns = [
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('api/auth/', include('allauth.urls')),
+     #path('api/auth/social/', include('dj_rest_auth.social_urls')),
     path('api/products/', include('products.urls')),
     path('api-token-auth/', obtain_auth_token),
     path('api/cart/', include('cart.urls')),
@@ -37,7 +43,10 @@ urlpatterns = [
     path('api/dispatch-riders/', include('riders.urls')),
     path('api/', include('store_locations.urls')),
     path('', include('search.urls')),
+    path('api/auth/google/', GoogleLogin.as_view(), name='google_login')
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+

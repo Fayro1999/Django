@@ -79,8 +79,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'dj_rest_auth',
     'dj_rest_auth.registration',
-    
-
 ]
 
 AUTH_USER_MODEL = 'authent.CustomUser'
@@ -93,6 +91,7 @@ AUTHENTICATION_BACKENDS = [
     'riders.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'social_core.backends.google.GoogleOAuth2',
 ]
 
 # dj-rest-auth settings
@@ -101,12 +100,15 @@ REST_USE_JWT = True
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': 'your-google-client-id',
-            'secret': 'your-google-client-secret',
-            'key': ''
+            'client_id': '949685790616-ju0o0d4e86ahfk3s8ti3092lmhq2fi4k.apps.googleusercontent.com',
+    'secret': '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',
+    'key': 'AIzaSyBIjfmOAVt5uUJf0ZV_SGaIzLFSOKuAYAw'
         }
     }
 }
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+
 
 
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -360,5 +362,4 @@ else:
 
 # Load the credentials from the JSON string
 #cred = credentials.Certificate(json.loads(firebase_key_json))
-
 
