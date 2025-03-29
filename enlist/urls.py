@@ -29,7 +29,7 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client  # ✅ Required for OAuth2
-    callback_url = "https://django-7u8g.onrender.com/api/auth/google/callback/"
+    callback_url = "https://django-7u8g.onrender.com/api/auth/google/login/token/"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/authent/', include('authent.urls')),
