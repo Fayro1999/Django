@@ -41,6 +41,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['django-7u8g.onrender.com', 'localhost', '127.0.0.1']
 
 
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -91,7 +93,7 @@ AUTHENTICATION_BACKENDS = [
     'riders.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-    'social_core.backends.google.GoogleOAuth2',
+    #'social_core.backends.google.GoogleOAuth2',
 ]
 
 # dj-rest-auth settings
@@ -99,14 +101,19 @@ REST_USE_JWT = True
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
         'APP': {
             'client_id': '949685790616-ju0o0d4e86ahfk3s8ti3092lmhq2fi4k.apps.googleusercontent.com',
-    'secret': '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',
-    'key': 'AIzaSyBIjfmOAVt5uUJf0ZV_SGaIzLFSOKuAYAw'
+            'secret': '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',
+            'key': 'AIzaSyBIjfmOAVt5uUJf0ZV_SGaIzLFSOKuAYAw'
         }
     }
 }
 
+
+    
+           
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 
