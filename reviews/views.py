@@ -29,6 +29,15 @@ class UnsaveProductView(generics.DestroyAPIView):
         return Response({"message": "Product unsaved"}, status=204)
 
 
+        # Check if a product is saved
+class CheckSavedProductView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, product_id):
+        is_saved = SavedProduct.objects.filter(user=request.user, product_id=product_id).exists()
+        return Response({"is_saved": is_saved})
+
+
 # Saving stores
 class SavedStoreListCreateView(generics.ListCreateAPIView):
     serializer_class = SavedStoreSerializer
@@ -51,6 +60,15 @@ class UnsaveStoreView(generics.DestroyAPIView):
         saved_store = get_object_or_404(SavedStore, user=request.user, store_id=store_id)
         saved_store.delete()
         return Response({"message": "Store unsaved"}, status=204)
+
+
+# Check if a store is saved
+class CheckSavedStoreView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, store_id):
+        is_saved = SavedStore.objects.filter(user=request.user, store_id=store_id).exists()
+        return Response({"is_saved": is_saved})
 
 # Reviews for products
 class ProductReviewListCreateView(generics.ListCreateAPIView):

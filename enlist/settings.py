@@ -38,7 +38,7 @@ SECRET_KEY = 'django-insecure-xjk(30nqy16&vpmac257a9hoe%j3x49k)demqmm869da+pb0@y
 DEBUG = True
 #DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['django-7u8g.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['django-7u8g.onrender.com', 'localhost', '127.0.0.1', 'eazzi.com.ng/backend/']
 
 
 
@@ -70,8 +70,8 @@ INSTALLED_APPS = [
     'store_locations',
     'search',
     'reviews',
-
-    
+    'cloudinary',
+    'cloudinary_storage',
 
 
     # Third-party apps
@@ -214,9 +214,25 @@ DATABASES = {
     }
 }
 
+#DATABASES = {
+    #'default': dj_database_url.config(default='postgresql://eazzi_iclx_user:1WxEzIgEURkeZhkEn1esYnUrygu4mbIs@dpg-cv9uj1btq21c73bomhgg-a.oregon-postgres.render.com/eazzi_iclx')
+#}
+
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://eazzi_iclx_user:1WxEzIgEURkeZhkEn1esYnUrygu4mbIs@dpg-cv9uj1btq21c73bomhgg-a.oregon-postgres.render.com/eazzi_iclx')
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Eazziplug',      # e.g. cpaneluser_dbname
+        'USER': 'Eazziplug',      # e.g. cpaneluser_dbuser
+        'PASSWORD': 'Eazziplug123',
+        'HOST': '104.194.10.93',  # e.g. yourdomain.com or server IP
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'use_unicode': True,
+        },
+    }
 }
+
 
 #DATABASES = {
     #'default': dj_database_url.config(
@@ -267,13 +283,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5175",
+    "http://localhost:5177",
     "https://eazziplug.com.ng",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:5175", "https://eazziplug.com.ng"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5177", "https://eazziplug.com.ng"]
 
 # JWT settings
 JWT_AUTH_COOKIE = 'my-app-auth'
@@ -282,6 +298,14 @@ JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
 #Media management
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'drz8m5hj2',
+    'API_KEY': '663438544161794',
+    'API_SECRET': '4j2ixRIYabfIjWccKId87_EpUCQ',
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 # settings.py
