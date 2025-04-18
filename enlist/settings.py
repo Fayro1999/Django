@@ -283,7 +283,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5177",
+    "http://localhost:5173",
     "http://eazziplug.com.ng",
 ]
 
