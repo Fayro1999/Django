@@ -289,7 +289,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:5177", "https://eazziplug.com.ng"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5177", "http://eazziplug.com.ng"]
 
 # JWT settings
 JWT_AUTH_COOKIE = 'my-app-auth'
