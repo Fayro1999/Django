@@ -227,8 +227,10 @@ DATABASES = {
         'HOST': '104.194.10.93',  # e.g. yourdomain.com or server IP
         'PORT': '3306',
         'OPTIONS': {
-            'charset': 'utf8mb4',
+            'charset': 'utf8',
             'use_unicode': True,
+            'connect_timeout': 600,
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1;",
         },
     }
 }
