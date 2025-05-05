@@ -56,7 +56,7 @@ class StoreProfileCombinedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StoreUserProfile
-        fields = ['user', 'groups', 'user_permissions', 'store_details', 'products' 'id']
+        fields = ['user', 'groups', 'user_permissions', 'store_details', 'products', 'id']
 
     def get_store_details(self, obj):
         print("Debugging `get_store_details`: obj =", obj, "type =", type(obj))
