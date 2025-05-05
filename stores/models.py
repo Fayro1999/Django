@@ -23,14 +23,7 @@ class StoreUserProfile(models.Model):
 
 
 class StoreDetails(models.Model):
-    CATEGORY_CHOICES = [
-        ('groceries', 'Groceries'),
-        ('appliances', 'Appliances'),
-        ('household_cleaning', 'Household Cleaning'),
-        ('electronics', 'Electronics'),
-        ('other', 'Other Category'),
-    ]
-
+    
     store_user_profile = models.OneToOneField(StoreUserProfile, on_delete=models.CASCADE, related_name='store_details')
     store_name = models.CharField(max_length=255)
     store_address = models.CharField(max_length=255)
@@ -42,7 +35,7 @@ class StoreDetails(models.Model):
     cac_image = models.ImageField(upload_to='cac_images/')
 
     # New Fields
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
+    #category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
     working_hours = models.CharField(max_length=100, blank=True, null=True)
     about_store = models.TextField(blank=True, null=True)
     profile_image = models.ImageField(upload_to='store_profiles/', blank=True, null=True)
