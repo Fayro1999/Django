@@ -2,21 +2,13 @@ from django.db import models
 from stores.models import StoreDetails
 
 class Product(models.Model):
-
-    CATEGORY_CHOICES = [
-        ('groceries', 'Groceries'),
-        ('appliances', 'Appliances'),
-        ('household_cleaning', 'Household Cleaning'),
-        ('electronics', 'Electronics'),
-        ('other', 'Other Category'),
-    ]
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=500)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='product_images/') 
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='other')
+    category = models.CharField(max_length=50)
     vendor = models.ForeignKey(StoreDetails, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
     views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True, null=True,  blank=True)  # Automatically sets the timestamp when a product is created
