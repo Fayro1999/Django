@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'reviews',
     'cloudinary',
     'cloudinary_storage',
+    'payments',
 
 
     # Third-party apps
@@ -134,7 +135,7 @@ EMAIL_USE_TLS = True
 #EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 #EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_HOST_USER = 'eazzi.eservice@gmail.com'  # Your email address
-EMAIL_HOST_PASSWORD = 'bify enmn ycra mwyv'  # Your email password
+EMAIL_HOST_PASSWORD = 'bifyenmnycramwyv'  # Your email password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
